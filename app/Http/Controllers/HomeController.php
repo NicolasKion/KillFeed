@@ -62,13 +62,23 @@ class HomeController extends Controller
 
     private function fetchKillmails(int $character): Collection
     {
+        $cache_key = "killmails-$character";
+
+        if (Cache::has($cache_key)) {
+            return Cache::get($cache_key);
+        }
+
         // Fetch the characters latest killmail hashes from zkillboard
         $url = "https://zkillboard.com/api/characterID/$character/";
         $response = Http::get($url);
 
         $killmails = $response->json();
 
-        return collect($killmails);
+        $collection = collect($killmails);
+
+        Cache::put($cache_key, $collection, now()->addHour());
+
+        return $collection;
     }
 
     private function fetchKillmail(Fluent $killmail): KillmailData
