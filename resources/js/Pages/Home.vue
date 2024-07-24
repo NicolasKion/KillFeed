@@ -10,9 +10,14 @@ const intl = new Intl.NumberFormat('en-US', {
 });
 
 const id = ref('');
+const count = ref(5);
 
 const path = computed(() => {
-    return `${window.location.origin}/${id.value}`;
+    return `${window.location.origin}/${id.value}?count=${count.value}`;
+});
+
+const size = computed(() => {
+    return `${128 * count.value}x${166}`;
 });
 
 </script>
@@ -28,6 +33,10 @@ const path = computed(() => {
                 character and looking at the URL)
                 <input v-model="id" class="border border-gray-300 rounded-md p-2 w-full mt-2" type="text"/>
             </li>
+            <li>
+                Enter the number of killmails you want to display at once.
+                <input v-model="count" class="border border-gray-300 rounded-md p-2 w-full mt-2" type="number"/>
+            </li>
             <li v-if="id">
                 Copy the following URL and add it as a browser source in OBS or your streaming software.
                 <pre class="bg-gray-800 text-white p-2 rounded-md mt-2">{{
@@ -35,7 +44,7 @@ const path = computed(() => {
                     }}</pre>
             </li>
             <li v-if="id">
-                Set the size of the browser source to 642x166 pixels.
+                Set the size of the browser source to {{ size }} pixels.
                 Make sure that you are actually setting the size of the browser source and not just scaling its output.
             </li>
         </ol>

@@ -51,7 +51,9 @@ onUnmounted(() => {
 <template>
     <Head :title="character.name"/>
     <div
-        class="gap grid-cols-5 inline-grid divide-neutral-800 divide-x text-white border border-neutral-800 rounded-xl overflow-hidden bg-neutral-900">
+        :style="{ gridTemplateColumns: 'repeat(' + (killmails.length) + ', 1fr)' }"
+        class="gap inline-grid divide-neutral-800 divide-x text-white border border-neutral-800 rounded-xl overflow-hidden bg-neutral-900"
+    >
         <div
             v-for="killmail in killmails"
             class="">

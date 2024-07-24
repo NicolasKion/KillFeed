@@ -19,12 +19,13 @@ class HomeController extends Controller
 
     public function show(?int $character = null)
     {
+        $count = request('count', 5);
         $character = $this->fetchCharacter($character);
         // Fetch the characters latest killmail hashes from zkillboard
         $killmails = $this->fetchKillmails($character->id);
         // Fetch the latest n killmails for the character from esi
         $killmails = $killmails
-            ->take(5)
+            ->take($count)
             ->map(fn($killmail) => $this->fetchKillmail(\fluent($killmail)));
 
         return inertia('Character', [
