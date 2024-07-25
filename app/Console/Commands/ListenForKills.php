@@ -51,7 +51,6 @@ class ListenForKills extends Command
         })
             ->onConnect(function (WebSocket\Client $client, WebSocket\Connection $connection) {
                 $this->connectToNewIds($client);
-                $this->listenToAllKillmails($client);
             })
             ->onTick(function (WebSocket\Client $client) use ($cacheService) {
                 $this->connectToNewIds($client);
@@ -95,11 +94,6 @@ class ListenForKills extends Command
         return Character::query()->where('listening_since', '>=', now()->subMinutes(10))->pluck('id');
     }
 
-    public function listenToAllKillmails(WebSocket\Client $client): void
-    {
-        $client->text('{"action":"sub","channel":"killstream"}');
-    }
-
     public function disconnectFromInvalidIds(WebSocket\Client $client): Collection
     {
         $invalid_ids = $this->connected_to_ids->diff($this->getCharactersToSubscribeTo());
@@ -111,6 +105,11 @@ class ListenForKills extends Command
         });
 
         return $invalid_ids;
+    }
+
+    public function listenToAllKillmails(WebSocket\Client $client): void
+    {
+        $client->text('{"action":"sub","channel":"killstream"}');
     }
 
     public function unsubscribeFromAllKillmails(WebSocket\Client $client): void
