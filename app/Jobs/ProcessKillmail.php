@@ -4,14 +4,16 @@ namespace App\Jobs;
 
 use App\DTO\EsiKillmail;
 use App\DTO\zKillKillmail;
+use App\Jobs\Middleware\NotDuringDowntime;
 use App\Models\Character;
 use App\Models\Killmail;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 
-class ProcessKillmail implements ShouldQueue
+class ProcessKillmail implements ShouldQueue, ShouldBeUnique
 {
     use Queueable;
 
@@ -95,5 +97,15 @@ class ProcessKillmail implements ShouldQueue
 
             $involvements->each(fn($involvement) => $killmail->killmailInvolvements()->updateOrCreate($involvement));
         }, 5);
+    }
+
+    public function uniqueId(): string
+    {
+        return $this->killmail_id;
+    }
+
+    public function middleware(): array
+    {
+        return [new NotDuringDowntime()];
     }
 }
