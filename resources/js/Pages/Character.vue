@@ -1,8 +1,9 @@
 <script lang="ts" setup>
 import {Head, router} from '@inertiajs/vue3';
-import {onMounted, onUnmounted} from "vue";
+import {computed, onMounted, onUnmounted} from "vue";
+import {differenceInHours} from "date-fns";
 
-defineProps<{
+const props = defineProps<{
     character: {
         id: number;
         name: string;
@@ -14,10 +15,10 @@ defineProps<{
         corporation_id: number;
         alliance_id: number;
         ship_type_id: number;
-        killmail_time: string;
+        time: string;
         value: number;
         solo: boolean;
-        attackers: {
+        killmail_involvements: {
             character_id: number;
             corporation_id: number;
             alliance_id: number;
@@ -28,6 +29,8 @@ defineProps<{
             weapon_type_id: number;
         }[];
     }[];
+    count: number;
+    hours: number;
 }>();
 
 const intl = new Intl.NumberFormat('en-US', {
@@ -36,6 +39,10 @@ const intl = new Intl.NumberFormat('en-US', {
 });
 
 let interval: number;
+
+const placeholders = computed(() => {
+    return Array.from({length: props.count - props.killmails.length});
+});
 
 onMounted(() => {
     interval = setInterval(() => {
@@ -46,12 +53,19 @@ onMounted(() => {
 onUnmounted(() => {
     clearInterval(interval);
 });
+
+function isOlderThanHours(killmail: { time: string }, hours: number) {
+    let diff = differenceInHours(new Date(), new Date(killmail.time));
+
+    return diff > hours && hours > 0;
+}
 </script>
 
 <template>
     <Head :title="character.name"/>
     <div
-        :style="{ gridTemplateColumns: 'repeat(' + (killmails.length) + ', 1fr)' }"
+
+        :style="{ gridTemplateColumns: 'repeat(' + count + ', 1fr)' }"
         class="gap inline-grid divide-neutral-800 divide-x text-white border border-neutral-800 rounded-xl overflow-hidden bg-neutral-900"
     >
         <div
@@ -75,7 +89,37 @@ onUnmounted(() => {
                     class="text-neutral-500">solo</span>
                 <span
                     v-else
-                    class="text-neutral-500">{{ killmail.attackers.length }}</span>
+                    class="text-neutral-500">{{ killmail.killmail_involvements.length }}</span>
+            </div>
+        </div>
+        <div
+            v-for="i in placeholders"
+            v-if="killmails.length < count"
+            class="">
+            <svg
+                class="size-32"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+            >
+                <line
+                    stroke-width="0.01"
+                    x1="0"
+                    x2="24"
+                    y1="0"
+                    y2="24"
+                ></line>
+                <line
+                    stroke-width="0.01"
+                    x1="0"
+                    x2="24"
+                    y1="24"
+                    y2="0"
+                ></line>
+            </svg>
+            <div class="border-t border-gray-800 flex justify-center items-center p-1">
+                <p class="text-neutral-500 font-bold">N/A</p>
             </div>
         </div>
     </div>

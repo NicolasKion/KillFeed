@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "940a6dea4acc6e6662fc35b0a8bd0bf9",
+    "content-hash": "abb49f71de6dc399f62ff840d2d372a4",
     "packages": [
         {
             "name": "brick/math",
@@ -1333,6 +1333,85 @@
             "time": "2024-07-16T14:33:07+00:00"
         },
         {
+            "name": "laravel/horizon",
+            "version": "v5.26.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/laravel/horizon.git",
+                "reference": "ee804ece8e0376e8ddf44348de947945751c06f2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/laravel/horizon/zipball/ee804ece8e0376e8ddf44348de947945751c06f2",
+                "reference": "ee804ece8e0376e8ddf44348de947945751c06f2",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "ext-pcntl": "*",
+                "ext-posix": "*",
+                "illuminate/contracts": "^9.21|^10.0|^11.0",
+                "illuminate/queue": "^9.21|^10.0|^11.0",
+                "illuminate/support": "^9.21|^10.0|^11.0",
+                "nesbot/carbon": "^2.17|^3.0",
+                "php": "^8.0",
+                "ramsey/uuid": "^4.0",
+                "symfony/console": "^6.0|^7.0",
+                "symfony/error-handler": "^6.0|^7.0",
+                "symfony/process": "^6.0|^7.0"
+            },
+            "require-dev": {
+                "mockery/mockery": "^1.0",
+                "orchestra/testbench": "^7.0|^8.0|^9.0",
+                "phpstan/phpstan": "^1.10",
+                "phpunit/phpunit": "^9.0|^10.4",
+                "predis/predis": "^1.1|^2.0"
+            },
+            "suggest": {
+                "ext-redis": "Required to use the Redis PHP driver.",
+                "predis/predis": "Required when not using the Redis PHP driver (^1.1|^2.0)."
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "5.x-dev"
+                },
+                "laravel": {
+                    "providers": [
+                        "Laravel\\Horizon\\HorizonServiceProvider"
+                    ],
+                    "aliases": {
+                        "Horizon": "Laravel\\Horizon\\Horizon"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Laravel\\Horizon\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Taylor Otwell",
+                    "email": "taylor@laravel.com"
+                }
+            ],
+            "description": "Dashboard and code-driven configuration for Laravel queues.",
+            "keywords": [
+                "laravel",
+                "queue"
+            ],
+            "support": {
+                "issues": "https://github.com/laravel/horizon/issues",
+                "source": "https://github.com/laravel/horizon/tree/v5.26.0"
+            },
+            "time": "2024-07-22T14:37:58+00:00"
+        },
+        {
             "name": "laravel/prompts",
             "version": "v0.1.24",
             "source": {
@@ -2531,6 +2610,299 @@
                 }
             ],
             "time": "2024-07-20T21:41:07+00:00"
+        },
+        {
+            "name": "phrity/net-stream",
+            "version": "2.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/sirn-se/phrity-net-stream.git",
+                "reference": "4a6704fae3ad2e7c1576f51f1b8425973ba77c63"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/sirn-se/phrity-net-stream/zipball/4a6704fae3ad2e7c1576f51f1b8425973ba77c63",
+                "reference": "4a6704fae3ad2e7c1576f51f1b8425973ba77c63",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^8.0",
+                "phrity/util-errorhandler": "^1.1",
+                "psr/http-factory": "^1.0",
+                "psr/http-message": "^1.1 | ^2.0"
+            },
+            "require-dev": {
+                "php-coveralls/php-coveralls": "^2.0",
+                "phpunit/phpunit": "^9.0 | ^10.0 | ^11.0",
+                "phrity/net-uri": "^2.0",
+                "squizlabs/php_codesniffer": "^3.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Phrity\\Net\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Sören Jensen",
+                    "email": "sirn@sirn.se",
+                    "homepage": "https://phrity.sirn.se"
+                }
+            ],
+            "description": "Socket stream classes implementing PSR-7 Stream and PSR-17 StreamFactory",
+            "homepage": "https://phrity.sirn.se/net-stream",
+            "keywords": [
+                "Socket",
+                "client",
+                "psr-17",
+                "psr-7",
+                "server",
+                "stream",
+                "stream factory"
+            ],
+            "support": {
+                "issues": "https://github.com/sirn-se/phrity-net-stream/issues",
+                "source": "https://github.com/sirn-se/phrity-net-stream/tree/2.0.1"
+            },
+            "time": "2024-06-30T10:44:58+00:00"
+        },
+        {
+            "name": "phrity/net-uri",
+            "version": "2.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/sirn-se/phrity-net-uri.git",
+                "reference": "841190135af4fab18135226aaaf99ec5791377ac"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/sirn-se/phrity-net-uri/zipball/841190135af4fab18135226aaaf99ec5791377ac",
+                "reference": "841190135af4fab18135226aaaf99ec5791377ac",
+                "shasum": ""
+            },
+            "require": {
+                "ext-mbstring": "*",
+                "php": "^8.0",
+                "psr/http-factory": "^1.0",
+                "psr/http-message": "^1.1 | ^2.0"
+            },
+            "require-dev": {
+                "php-coveralls/php-coveralls": "^2.0",
+                "phpunit/phpunit": "^9.0 | ^10.0 | ^11.0",
+                "phrity/util-errorhandler": "^1.1",
+                "squizlabs/php_codesniffer": "^3.5"
+            },
+            "suggest": {
+                "ext-intl": "Enables IDN conversion for non-ASCII domains"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Phrity\\Net\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Sören Jensen",
+                    "email": "sirn@sirn.se",
+                    "homepage": "https://phrity.sirn.se"
+                }
+            ],
+            "description": "PSR-7 Uri and PSR-17 UriFactory implementation",
+            "homepage": "https://phrity.sirn.se/net-uri",
+            "keywords": [
+                "psr-17",
+                "psr-7",
+                "uri",
+                "uri factory"
+            ],
+            "support": {
+                "issues": "https://github.com/sirn-se/phrity-net-uri/issues",
+                "source": "https://github.com/sirn-se/phrity-net-uri/tree/2.1.0"
+            },
+            "time": "2024-07-08T06:14:09+00:00"
+        },
+        {
+            "name": "phrity/util-errorhandler",
+            "version": "1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/sirn-se/phrity-util-errorhandler.git",
+                "reference": "4016d9f9615a4c602f525b0542e4835e316a42e4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/sirn-se/phrity-util-errorhandler/zipball/4016d9f9615a4c602f525b0542e4835e316a42e4",
+                "reference": "4016d9f9615a4c602f525b0542e4835e316a42e4",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.4 | ^8.0"
+            },
+            "require-dev": {
+                "php-coveralls/php-coveralls": "^2.0",
+                "phpunit/phpunit": "^9.0 | ^10.0 | ^11.0",
+                "squizlabs/php_codesniffer": "^3.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Phrity\\Util\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Sören Jensen",
+                    "email": "sirn@sirn.se",
+                    "homepage": "https://phrity.sirn.se"
+                }
+            ],
+            "description": "Inline error handler; catch and resolve errors for code block.",
+            "homepage": "https://phrity.sirn.se/util-errorhandler",
+            "keywords": [
+                "error",
+                "warning"
+            ],
+            "support": {
+                "issues": "https://github.com/sirn-se/phrity-util-errorhandler/issues",
+                "source": "https://github.com/sirn-se/phrity-util-errorhandler/tree/1.1.0"
+            },
+            "time": "2024-03-05T19:32:14+00:00"
+        },
+        {
+            "name": "phrity/websocket",
+            "version": "3.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/sirn-se/websocket-php.git",
+                "reference": "36a79edf2a00b93ff1fea3cbac1bd213f98d5ef9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/sirn-se/websocket-php/zipball/36a79edf2a00b93ff1fea3cbac1bd213f98d5ef9",
+                "reference": "36a79edf2a00b93ff1fea3cbac1bd213f98d5ef9",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^8.1",
+                "phrity/net-stream": "^2.0",
+                "phrity/net-uri": "^2.1",
+                "phrity/util-errorhandler": "^1.1",
+                "psr/http-message": "^1.1 | ^2.0",
+                "psr/log": "^1.0 | ^2.0 | ^3.0"
+            },
+            "require-dev": {
+                "php-coveralls/php-coveralls": "^2.0",
+                "phpunit/phpunit": "^10.0 | ^11.0",
+                "phrity/net-mock": "^2.0",
+                "squizlabs/php_codesniffer": "^3.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "WebSocket\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "ISC"
+            ],
+            "authors": [
+                {
+                    "name": "Fredrik Liljegren"
+                },
+                {
+                    "name": "Sören Jensen",
+                    "email": "sirn@sirn.se",
+                    "homepage": "https://phrity.sirn.se"
+                }
+            ],
+            "description": "WebSocket client and server",
+            "homepage": "https://phrity.sirn.se/websocket",
+            "keywords": [
+                "client",
+                "server",
+                "websocket"
+            ],
+            "support": {
+                "issues": "https://github.com/sirn-se/websocket-php/issues",
+                "source": "https://github.com/sirn-se/websocket-php/tree/3.1.0"
+            },
+            "time": "2024-07-09T11:00:42+00:00"
+        },
+        {
+            "name": "predis/predis",
+            "version": "v2.2.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/predis/predis.git",
+                "reference": "b1d3255ed9ad4d7254f9f9bba386c99f4bb983d1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/predis/predis/zipball/b1d3255ed9ad4d7254f9f9bba386c99f4bb983d1",
+                "reference": "b1d3255ed9ad4d7254f9f9bba386c99f4bb983d1",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.2 || ^8.0"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^3.3",
+                "phpstan/phpstan": "^1.9",
+                "phpunit/phpunit": "^8.0 || ~9.4.4"
+            },
+            "suggest": {
+                "ext-relay": "Faster connection with in-memory caching (>=0.6.2)"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Predis\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Till Krüss",
+                    "homepage": "https://till.im",
+                    "role": "Maintainer"
+                }
+            ],
+            "description": "A flexible and feature-complete Redis client for PHP.",
+            "homepage": "http://github.com/predis/predis",
+            "keywords": [
+                "nosql",
+                "predis",
+                "redis"
+            ],
+            "support": {
+                "issues": "https://github.com/predis/predis/issues",
+                "source": "https://github.com/predis/predis/tree/v2.2.2"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/sponsors/tillkruss",
+                    "type": "github"
+                }
+            ],
+            "time": "2023-09-13T16:42:03+00:00"
         },
         {
             "name": "psr/clock",

@@ -2,122 +2,105 @@
 
 namespace App\Http\Controllers;
 
-use App\DTO\CharacterData;
-use App\DTO\KillmailData;
-use Illuminate\Support\Collection;
+use App\DTO\zKillKillmail;
+use App\Jobs\ProcessKillmail;
+use App\Models\Character;
+use App\Models\Killmail;
+use App\Services\CacheService;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Fluent;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 
 class HomeController extends Controller
 {
+
+    function __construct(public CacheService $cacheService)
+    {
+    }
 
     public function index()
     {
         return inertia('Home');
     }
 
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
     public function show(?int $character = null)
     {
         $count = request('count', 5);
+        $hours = request('hours');
+
+        // Get the current character
         $character = $this->fetchCharacter($character);
         // Fetch the characters latest killmail hashes from zkillboard
-        $killmails = $this->fetchKillmails($character->id);
-        // Fetch the latest n killmails for the character from esi
-        $killmails = $killmails
-            ->take($count)
-            ->map(fn($killmail) => $this->fetchKillmail(\fluent($killmail)));
+        $this->getKillmails($character->id, $count);
+
+        $character->listenNow();
 
         return inertia('Character', [
             'character' => $character,
-            'killmails' => $killmails,
+            'killmails' => Killmail::whereHas('killmailInvolvements', fn($q) => $q->where('character_id', $character->id))
+                ->latest('id')
+                ->with('killmailInvolvements')
+                ->when($hours, fn($q) => $q->where('time', '>', now()->subHours($hours)))
+                ->take($count)->get(),
+            'count' => $count,
+            'hours' => $hours,
         ]);
     }
 
-    private function fetchCharacter(?int $character): CharacterData
+    private function fetchCharacter(?int $character_id): Character
     {
-        $cache_key = "character-$character";
+        $character = Character::query()->whereNotNull('name')->find($character_id);
 
-        // Check if the character is already in the cache
-        if (Cache::has($cache_key)) {
-            return Cache::get($cache_key);
+        if ($character) {
+            return $character;
         }
 
         // Fetch the character from esi
-        $url = "https://esi.evetech.net/latest/characters/$character/";
+        $url = "https://esi.evetech.net/latest/characters/$character_id/";
 
         $response = Http::get($url);
 
-        $data = fluent($response->json());
+        abort_if($response->failed(), 404);
 
-        $character = new CharacterData(
-            id: $character,
-            name: $data->get('name'),
+        $data = $response->json();
+
+        return Character::query()->updateOrCreate(
+            [
+                'id' => $character_id,
+            ], [
+                'id' => $character_id,
+                'name' => $data['name']
+            ]
         );
-
-        Cache::put($cache_key, $character, now()->addHour());
-
-        return $character;
     }
 
-    private function fetchKillmails(int $character): Collection
-    {
-        $cache_key = "killmails-$character";
 
-        if (Cache::has($cache_key)) {
-            return Cache::get($cache_key);
+    private function getKillmails(int $character, int $count = 5): void
+    {
+        $cacheKey = "character:$character:killmails";
+
+        $killmails = Cache::get($cacheKey);
+
+        if (!$killmails) {
+            $url = "https://zkillboard.com/api/characterID/$character/";
+            $response = Http::retry(5)->get($url);
+
+            if ($response->failed()) {
+                return;
+            }
+
+            $killmails = $response->json();
+
+            Cache::put($cacheKey, $killmails, now()->addMinutes(5));
         }
 
-        // Fetch the characters latest killmail hashes from zkillboard
-        $url = "https://zkillboard.com/api/characterID/$character/";
-        $response = Http::get($url);
+        $collection = collect($killmails)->map(fn(array $killmail) => zKillKillmail::fromArray($killmail))->take($count);
 
-        $killmails = $response->json();
-
-        $collection = collect($killmails);
-
-        Cache::put($cache_key, $collection, now()->addHour());
-
-        return $collection;
-    }
-
-    private function fetchKillmail(Fluent $killmail): KillmailData
-    {
-        $cache_key = "killmail-{$killmail->killmail_id}";
-
-        // Check if the killmail is already in the cache
-        if (Cache::has($cache_key)) {
-            return Cache::get($cache_key);
-        }
-
-        // Fetch the latest n killmails for the character from esi
-        $id = $killmail->killmail_id;
-        $hash = $killmail->get('zkb.hash');
-
-        $url = "https://esi.evetech.net/latest/killmails/$id/$hash/";
-
-        $response = Http::get($url);
-
-        $data = fluent($response->json());
-
-        $killmail = new KillmailData(
-            id: $killmail->killmail_id,
-            hash: $killmail->get('zkb.hash'),
-            character_id: $data->get('victim.character_id'),
-            ship_type_id: $data->get('victim.ship_type_id'),
-            solar_system_id: $data->get('solar_system_id'),
-            corporation_id: $data->get('victim.corporation_id'),
-            alliance_id: $data->get('victim.alliance_id'),
-            damage_taken: $data->get('victim.damage_taken'),
-            killmail_time: $data->get('killmail_time'),
-            attackers: $data->get('attackers') ?? [],
-            items: $data->get('victim.items') ?? [],
-            value: $killmail->get('zkb.totalValue'),
-            solo: $killmail->get('zkb.solo'),
-        );
-
-        Cache::put($cache_key, $killmail, now()->addHour());
-
-        return $killmail;
+        $collection->each(fn(zKillKillmail $killmail) => ProcessKillmail::dispatchUnless(Killmail::where('id', $killmail->id)->exists(), $killmail->id, $killmail->hash, $killmail));
     }
 }

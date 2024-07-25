@@ -13,12 +13,14 @@ const id = ref('');
 const count = ref(5);
 
 const path = computed(() => {
-    return `${window.location.origin}/${id.value}?count=${count.value}`;
+    return `${window.location.origin}/${id.value}?count=${count.value}${hours.value ? `&hours=${hours.value}` : ''}`;
 });
 
 const size = computed(() => {
     return `${128 * count.value}x${166}`;
 });
+
+const hours = ref(0);
 
 </script>
 
@@ -34,8 +36,12 @@ const size = computed(() => {
                 <input v-model="id" class="border border-gray-300 rounded-md p-2 w-full mt-2" type="text"/>
             </li>
             <li>
-                Enter the number of killmails you want to display at once.
+                Enter the maximum number of killmails you want to display at once.
                 <input v-model="count" class="border border-gray-300 rounded-md p-2 w-full mt-2" type="number"/>
+            </li>
+            <li>
+                Filter out killmails older than a certain number of hours. Set to 0 to disable.
+                <input v-model="hours" class="border border-gray-300 rounded-md p-2 w-full mt-2" type="number"/>
             </li>
             <li v-if="id">
                 Copy the following URL and add it as a browser source in OBS or your streaming software.
