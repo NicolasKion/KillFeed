@@ -21,6 +21,7 @@ class Killmail extends Model
         'ship_type_id',
         'damage_taken',
         'value',
+        'solo',
     ];
 
     public function character(): BelongsTo
