@@ -66,16 +66,17 @@ function isOlderThanHours(killmail: { time: string }, hours: number) {
     <div
 
         :style="{ gridTemplateColumns: 'repeat(' + count + ', 1fr)' }"
-        class="gap inline-grid divide-neutral-800 divide-x text-white border border-neutral-800 rounded-xl overflow-hidden bg-neutral-900"
+        class="gap inline-grid overflow-x-hidden divide-neutral-800 divide-x text-white border border-neutral-800 rounded-xl overflow-hidden bg-neutral-900"
     >
         <div
             v-for="killmail in killmails"
             class="">
-            <img
-                :alt="`Icon for ${killmail.ship_type_id}`"
-                :src="`https://images.evetech.net/types/${killmail.ship_type_id}/render?size=128`"
+            <div
+                :style="{ backgroundImage: `url(https://images.evetech.net/types/${killmail.ship_type_id}/render?size=128)` }"
                 class="size-32"
-            />
+            >
+
+            </div>
             <div class="grid grid-cols-[auto,1fr,auto] items-center gap-2 px-2 text-lg p-1">
                 <div :class="{
                     'bg-red-500': killmail.character_id === character.id,
