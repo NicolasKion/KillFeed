@@ -39,6 +39,7 @@ class ListenForKills extends Command
      */
     public function handle(CacheService $cacheService)
     {
+        $started_at = now();
         $client = new WebSocket\Client("wss://zkillboard.com/websocket/");
         $client
             ->addMiddleware(new WebSocket\Middleware\CloseHandler())
@@ -52,9 +53,15 @@ class ListenForKills extends Command
             ->onConnect(function (WebSocket\Client $client, WebSocket\Connection $connection) {
                 $this->connectToNewIds($client);
             })
-            ->onTick(function (WebSocket\Client $client) use ($cacheService) {
+            ->onTick(function (WebSocket\Client $client) use ($cacheService, &$started_at) {
                 $this->connectToNewIds($client);
                 $this->disconnectFromInvalidIds($client);
+
+                if ($started_at->diffInMinutes(now()) > 20) {
+                    $this->unsubscribeFromAllKillmails($client);
+                    $this->listenToAllKillmails($client);
+                    $started_at = now();
+                }
             });
 
         $client->start();
