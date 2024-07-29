@@ -54,14 +54,12 @@ class ListenForKills extends Command
                 $this->connectToNewIds($client);
             })
             ->onTick(function (WebSocket\Client $client) use ($cacheService, &$started_at) {
-                $this->connectToNewIds($client);
-                $this->disconnectFromInvalidIds($client);
-
                 if ($started_at->diffInMinutes(now()) > 20) {
-                    $this->unsubscribeFromAllKillmails($client);
-                    $this->listenToAllKillmails($client);
+                    $this->disconnectFromAllIds($client);
                     $started_at = now();
                 }
+                $this->connectToNewIds($client);
+                $this->disconnectFromInvalidIds($client);
             });
 
         $client->start();
@@ -94,6 +92,16 @@ class ListenForKills extends Command
         });
 
         return $new_ids;
+    }
+
+    function disconnectFromAllIds(WebSocket\Client $client): void
+    {
+        $this->connected_to_ids->each(function (int $id) use ($client) {
+            $this->info("Unsubscribing from $id");
+            $client->text(sprintf('{"action":"unsub","channel":"character:%d"}', $id));
+        });
+
+        $this->connected_to_ids = collect();
     }
 
     public function getCharactersToSubscribeTo(): Collection
