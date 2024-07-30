@@ -25,7 +25,9 @@ const path = computed(() => {
 });
 
 const size = computed(() => {
-    return `${128 * count.value}x${166}`;
+    const size_kills = count.value * 128;
+    const size_summary = 700;
+    return `${summary.value ? size_kills + size_summary : size_kills}x${166}`;
 });
 
 const hours = ref(0);
