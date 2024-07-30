@@ -96,7 +96,13 @@ class ProcessKillmail implements ShouldQueue, ShouldBeUnique
             ]);
 
             $involvements->each(fn($involvement) => $killmail->killmailInvolvements()->updateOrCreate($involvement));
-        }, 5);
+
+            $killmail->killmailInvolvements()->create([
+                'character_id' => $esi_killmail->victim->character_id,
+                'is_attacker' => false,
+            ]);
+
+        });
     }
 
     public function uniqueId(): string
