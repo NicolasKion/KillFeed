@@ -63,6 +63,10 @@ const placeholders = computed(() => {
 });
 
 const isk_efficiency = computed(() => {
+    if (props.kills_value === 0 && props.losses_value === 0) {
+        return 100;
+    }
+
     if (props.losses_value === 0) {
         return 100;
     }
@@ -72,7 +76,7 @@ const isk_efficiency = computed(() => {
     }
 
     if (props.kills_value > props.losses_value) {
-        return (props.losses_value / props.kills_value) * 100;
+        return 100 - (props.losses_value / props.kills_value) * 100;
     }
 
     return (props.kills_value / props.losses_value) * 100;
