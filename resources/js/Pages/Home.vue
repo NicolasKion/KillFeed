@@ -21,7 +21,7 @@ const path = computed(() => {
         hours: hours.value.toString(),
     });
 
-    return `https://${hostname}/character/${id.value}/killfeed?${params}`;
+    return `https://${hostname}/${id.value}?${params}`;
 });
 
 const size = computed(() => {
