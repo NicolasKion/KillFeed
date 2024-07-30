@@ -28,10 +28,11 @@ class HomeController extends Controller
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    public function show(?int $character = null)
+    public function show(?int $character)
     {
         $count = request('count', 5);
         $hours = request('hours');
+        $summary = request('summary', false);
 
         // Get the current character
         $character = $this->fetchCharacter($character);
@@ -39,6 +40,25 @@ class HomeController extends Controller
         $this->getKillmails($character->id, $count);
 
         $character->listenNow();
+
+        $killmails_count = Killmail::query()
+            ->whereHas('killmailInvolvements', fn($q) => $q->where('character_id', $character->id))
+            ->when($hours, fn($q) => $q->where('time', '>', now()->subHours($hours)),
+                fn($q) => $q->where('time', '>', now()->subDay()))
+            ->count();
+
+        $kills_value = Killmail::query()
+            ->whereHas('killmailInvolvements', fn($q) => $q->where('character_id', $character->id)->where('is_attacker', true))
+            ->when($hours, fn($q) => $q->where('time', '>', now()->subHours($hours)),
+                fn($q) => $q->where('time', '>', now()->subDay()))
+            ->sum('value');
+
+        $losses_value = Killmail::query()
+            ->whereHas('killmailInvolvements', fn($q) => $q->where('character_id', $character->id)->where('is_attacker', false))
+            ->when($hours, fn($q) => $q->where('time', '>', now()->subHours($hours)),
+                fn($q) => $q->where('time', '>', now()->subDay()))
+            ->sum('value');
+
 
         return inertia('Character', [
             'character' => $character,
@@ -48,7 +68,11 @@ class HomeController extends Controller
                 ->when($hours, fn($q) => $q->where('time', '>', now()->subHours($hours)))
                 ->take($count)->get(),
             'count' => $count,
-            'hours' => $hours,
+            'hours' => $hours ?? 24,
+            'summary' => $summary,
+            'killmails_count' => (int)$killmails_count,
+            'kills_value' => (float)$kills_value,
+            'losses_value' => (float)$losses_value,
         ]);
     }
 
