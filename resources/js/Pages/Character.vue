@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import { Head, router } from "@inertiajs/vue3";
 import { computed, onMounted, onUnmounted } from "vue";
-import { differenceInHours } from "date-fns";
 
 const props = defineProps<{
     character: {
@@ -40,12 +39,6 @@ const props = defineProps<{
 const intl = new Intl.NumberFormat("en-US", {
     notation: "compact",
     compactDisplay: "short",
-});
-
-const intl_currency = new Intl.NumberFormat("en-US", {
-    style: "decimal",
-    maximumFractionDigits: 2,
-    minimumFractionDigits: 2,
 });
 
 let interval: number;
@@ -91,12 +84,6 @@ onMounted(() => {
 onUnmounted(() => {
     clearInterval(interval);
 });
-
-function isOlderThanHours(killmail: { time: string }, hours: number) {
-    let diff = differenceInHours(new Date(), new Date(killmail.time));
-
-    return diff > hours && hours > 0;
-}
 </script>
 
 <template>
