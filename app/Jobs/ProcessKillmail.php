@@ -91,8 +91,6 @@ class ProcessKillmail implements ShouldQueue, ShouldBeUnique
             $involvements = $attackers->map(fn($attacker) => [
                 'character_id' => $attacker->character_id,
                 'is_attacker' => true,
-            ])->push([
-                'character_id' => $esi_killmail->victim->character_id,
             ]);
 
             $involvements->each(fn($involvement) => $killmail->killmailInvolvements()->updateOrCreate($involvement));
