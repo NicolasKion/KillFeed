@@ -15,6 +15,7 @@ return new class extends Migration {
             $table->foreignId('killmail_id')->constrained()->cascadeOnDelete();
             $table->foreignId('character_id')->constrained()->cascadeOnDelete();
             $table->boolean('is_attacker')->default(false);
+            $table->unique(['killmail_id', 'character_id']);
             $table->timestamps();
         });
     }
