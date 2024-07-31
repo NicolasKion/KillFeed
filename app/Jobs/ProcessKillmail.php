@@ -66,7 +66,7 @@ class ProcessKillmail implements ShouldQueue, ShouldBeUnique
         DB::transaction(function () use ($esi_killmail, $zKillKillmail) {
 
             $attackers = collect($esi_killmail->attackers)->whereNotNull('character_id')->whereNotNull('corporation_id');
-            $character_ids = $attackers->pluck('character_id');
+            $character_ids = $attackers->pluck('character_id')->push($esi_killmail->victim->character_id)->unique();
 
             $character_ids->each(fn($character_id) => Character::updateOrCreate(['id' => $character_id], ['id' => $character_id]));
 
