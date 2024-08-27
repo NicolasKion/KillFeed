@@ -59,6 +59,8 @@ class ProcessKillmail implements ShouldQueue, ShouldBeUnique
             return;
         }
 
+        dump($response->json());
+
         $data = $response->json();
 
         $esi_killmail = EsiKillmail::fromArray($data);
@@ -66,7 +68,7 @@ class ProcessKillmail implements ShouldQueue, ShouldBeUnique
         DB::transaction(function () use ($esi_killmail, $zKillKillmail) {
 
             $attackers = collect($esi_killmail->attackers)->whereNotNull('character_id')->whereNotNull('corporation_id');
-            $character_ids = $attackers->pluck('character_id')->push($esi_killmail->victim->character_id)->unique();
+            $character_ids = $attackers->pluck('character_id')->push($esi_killmail->victim->character_id)->unique()->whereNotNull();
 
             $character_ids->each(fn($character_id) => Character::updateOrCreate(['id' => $character_id], ['id' => $character_id]));
 
@@ -95,10 +97,12 @@ class ProcessKillmail implements ShouldQueue, ShouldBeUnique
 
             $involvements->each(fn($involvement) => $killmail->killmailInvolvements()->updateOrCreate($involvement));
 
-            $killmail->killmailInvolvements()->create([
-                'character_id' => $esi_killmail->victim->character_id,
-                'is_attacker' => false,
-            ]);
+            if ($esi_killmail->victim->character_id !== null) {
+                $killmail->killmailInvolvements()->updateOrCreate([
+                    'character_id' => $esi_killmail->victim->character_id,
+                    'is_attacker' => false,
+                ]);
+            }
 
         });
     }

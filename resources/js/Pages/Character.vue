@@ -56,23 +56,10 @@ const placeholders = computed(() => {
 });
 
 const isk_efficiency = computed(() => {
-    if (props.kills_value === 0 && props.losses_value === 0) {
-        return 100;
-    }
+    // Killed 100m, lost 50m = 66.67%
+    // Killed 50m, lost 100m = 33.33%
 
-    if (props.losses_value === 0) {
-        return 100;
-    }
-
-    if (props.kills_value === 0) {
-        return 0;
-    }
-
-    if (props.kills_value > props.losses_value) {
-        return 100 - (props.losses_value / props.kills_value) * 100;
-    }
-
-    return (props.kills_value / props.losses_value) * 100;
+    return (props.kills_value / (props.kills_value + props.losses_value)) * 100;
 });
 
 onMounted(() => {
