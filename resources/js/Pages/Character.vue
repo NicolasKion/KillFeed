@@ -59,6 +59,10 @@ const isk_efficiency = computed(() => {
     // Killed 100m, lost 50m = 66.67%
     // Killed 50m, lost 100m = 33.33%
 
+    if (props.losses_value === 0) {
+        return 100;
+    }
+
     return (props.kills_value / (props.kills_value + props.losses_value)) * 100;
 });
 
