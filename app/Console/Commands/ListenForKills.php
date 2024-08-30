@@ -5,14 +5,9 @@ namespace App\Console\Commands;
 use App\Jobs\ProcessKillmail;
 use App\Models\Character;
 use App\Services\CacheService;
-use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
 use WebSocket;
-use WebSocket\Client;
-use WebSocket\Connection;
 
 class ListenForKills extends Command
 {
@@ -44,33 +39,22 @@ class ListenForKills extends Command
      */
     public function handle(CacheService $cacheService)
     {
-        $started_at = now();
         $client = new WebSocket\Client("wss://zkillboard.com/websocket/");
         $client
             ->addMiddleware(new WebSocket\Middleware\CloseHandler())
-            ->addMiddleware(new WebSocket\Middleware\PingResponder())
-            ->addMiddleware(new WebSocket\Middleware\PingInterval(interval: 30));
+            ->addMiddleware(new WebSocket\Middleware\PingResponder());
+
+        $this->info('Listening for kills...');
 
         $client->onText(function (WebSocket\Client $client, WebSocket\Connection $connection, WebSocket\Message\Message $message) use ($cacheService) {
             $this->processMessage($message->getContent());
         })
-            ->onHandshake(function (Client $client, Connection $connection, RequestInterface $request, ResponseInterface $response) {
+            ->onConnect(function (WebSocket\Client $client, WebSocket\Connection $connection) {
                 $this->connectToNewIds($client);
             })
-            ->onTick(function (WebSocket\Client $client) use ($cacheService, &$started_at) {
-                if ($started_at->diffInHours() >= 1) {
-                    $this->disconnectFromAllIds($client);
-                    $started_at = now();
-                }
+            ->onTick(function (WebSocket\Client $client) use ($cacheService) {
                 $this->connectToNewIds($client);
                 $this->disconnectFromInvalidIds($client);
-            })
-            ->onError(function (Client $client, Connection|null $connection, Exception $exception) {
-                // Act on exception
-                if (!$client->isRunning()) {
-                    // Re-start if not running - will reconnect if necessary
-                    $client->start();
-                }
             });
 
         $client->start();
@@ -108,16 +92,6 @@ class ListenForKills extends Command
     public function getCharactersToSubscribeTo(): Collection
     {
         return Character::query()->where('listening_since', '>=', now()->subMinutes(10))->pluck('id');
-    }
-
-    function disconnectFromAllIds(WebSocket\Client $client): void
-    {
-        $this->connected_to_ids->each(function (int $id) use ($client) {
-            $this->info("Unsubscribing from $id");
-            $client->text(sprintf('{"action":"unsub","channel":"character:%d"}', $id));
-        });
-
-        $this->connected_to_ids = collect();
     }
 
     public function disconnectFromInvalidIds(WebSocket\Client $client): Collection
