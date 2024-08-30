@@ -8,7 +8,7 @@ class zKillKillmail
      * Create a new class instance.
      */
     public function __construct(
-        public int    $id,
+        public ?int   $id,
         public string $hash,
         public int    $location_id,
         public float  $fitted_value,
@@ -28,7 +28,7 @@ class zKillKillmail
     public static function fromArray(array $data): self
     {
         return new self(
-            id: $data['killmail_id'],
+            id: $data['killmail_id'] ?? $data['killID'] ?? null,
             hash: $data['zkb']['hash'],
             location_id: $data['zkb']['locationID'],
             fitted_value: $data['zkb']['fittedValue'],
