@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\DTO\EsiKillmail;
 use App\DTO\zKillKillmail;
 use App\Jobs\Middleware\NotDuringDowntime;
+use App\Services\KillmailService;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
@@ -29,7 +30,7 @@ class ProcessKillmail implements ShouldQueue, ShouldBeUnique
     /**
      * Execute the job.
      */
-    public function handle(): void
+    public function handle(KillmailService $killmailService): void
     {
         $zKillKillmail = $this->zKillKillmail;
 
@@ -56,13 +57,11 @@ class ProcessKillmail implements ShouldQueue, ShouldBeUnique
             return;
         }
 
-        dump($response->json());
-
         $data = $response->json();
 
         $esi_killmail = EsiKillmail::fromArray($data);
 
-
+        $killmailService->store($esi_killmail, $zKillKillmail);
     }
 
     public function uniqueId(): string
