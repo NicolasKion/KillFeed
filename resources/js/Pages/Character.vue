@@ -83,7 +83,7 @@ onUnmounted(() => {
         :class="{
             'bg-neutral-900': summary,
         }"
-        class="flex justify-between items-center"
+        class="flex justify-between items-center relative"
     >
         <div
             :class="{
@@ -173,39 +173,53 @@ onUnmounted(() => {
                 </div>
             </div>
         </div>
-        <div v-if="summary" class="grid grid-cols-3 gap-16 p-2 mr-16">
-            <div class="p-2">
-                <h1
-                    class="text-lg font-bold flex items-center gap-2 text-neutral-500"
+        <div v-if="summary" class="absolute inset-0 left-auto">
+            <div
+                class="relative h-full bg-neutral-900 after:inset-y-0 after:absolute after:content-[''] after:right-full after:w-16 after:bg-gradient-to-l from-neutral-900 to-transparent"
+            >
+                <div
+                    class="h-full grid grid-cols-3 items-center gap-16 p-2 mx-8"
                 >
-                    <div class="size-2 rounded-full bg-green-500"></div>
-                    ISK destroyed
-                </h1>
-                <p class="text-white text-5xl mb-4 font-extrabold text-right">
-                    {{ intl.format(kills_value) }}
-                </p>
-            </div>
-            <div class="p-2">
-                <h1
-                    class="text-lg font-bold flex items-center gap-2 text-neutral-500"
-                >
-                    <div class="size-2 rounded-full bg-red-500"></div>
-                    ISK lost
-                </h1>
-                <p class="text-white text-5xl mb-4 font-extrabold text-right">
-                    {{ intl.format(losses_value) }}
-                </p>
-            </div>
-            <div class="p-2">
-                <h1
-                    class="text-lg font-bold flex items-center gap-2 text-neutral-500"
-                >
-                    <div class="size-2 rounded-full bg-amber-500"></div>
-                    ISK efficiency
-                </h1>
-                <p class="text-white text-5xl mb-4 font-extrabold text-right">
-                    {{ isk_efficiency.toFixed(0) }}%
-                </p>
+                    <div class="p-2">
+                        <h1
+                            class="text-lg font-bold flex items-center gap-2 text-neutral-500"
+                        >
+                            <div class="size-2 rounded-full bg-green-500"></div>
+                            ISK destroyed
+                        </h1>
+                        <p
+                            class="text-white text-5xl mb-4 font-extrabold text-right"
+                        >
+                            {{ intl.format(kills_value) }}
+                        </p>
+                    </div>
+                    <div class="p-2">
+                        <h1
+                            class="text-lg font-bold flex items-center gap-2 text-neutral-500"
+                        >
+                            <div class="size-2 rounded-full bg-red-500"></div>
+                            ISK lost
+                        </h1>
+                        <p
+                            class="text-white text-5xl mb-4 font-extrabold text-right"
+                        >
+                            {{ intl.format(losses_value) }}
+                        </p>
+                    </div>
+                    <div class="p-2">
+                        <h1
+                            class="text-lg font-bold flex items-center gap-2 text-neutral-500"
+                        >
+                            <div class="size-2 rounded-full bg-amber-500"></div>
+                            ISK efficiency
+                        </h1>
+                        <p
+                            class="text-white text-5xl mb-4 font-extrabold text-right"
+                        >
+                            {{ isk_efficiency.toFixed(0) }}%
+                        </p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
