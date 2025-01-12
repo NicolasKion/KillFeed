@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import { Head, router } from "@inertiajs/vue3";
-import { computed, onMounted, onUnmounted } from "vue";
+import {Head, router} from "@inertiajs/vue3";
+import {computed, onMounted, onUnmounted} from "vue";
 
 const props = defineProps<{
     character: {
@@ -52,7 +52,7 @@ const displayed_killmails = computed(() => {
 });
 
 const placeholders = computed(() => {
-    return Array.from({ length: props.count - props.killmails.length });
+    return Array.from({length: props.count - props.killmails.length});
 });
 
 const isk_efficiency = computed(() => {
@@ -78,7 +78,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <Head :title="character.name" />
+    <Head :title="character.name"/>
     <div
         :class="{
             'bg-neutral-900': summary,
@@ -117,11 +117,11 @@ onUnmounted(() => {
                         {{ intl.format(killmail.value) }}
                     </p>
                     <span v-if="killmail.solo" class="text-neutral-500"
-                        >solo</span
+                    >solo</span
                     >
                     <span v-else class="text-neutral-500">{{
-                        killmail.killmail_involvements.length
-                    }}</span>
+                            killmail.killmail_involvements.length
+                        }}</span>
                 </div>
             </div>
             <div
@@ -182,7 +182,7 @@ onUnmounted(() => {
                 >
                     <div class="p-2">
                         <h1
-                            class="text-lg font-bold flex items-center gap-2 text-neutral-500"
+                            class="text-lg font-bold flex items-center gap-2 text-neutral-500 whitespace-nowrap"
                         >
                             <div class="size-2 rounded-full bg-green-500"></div>
                             ISK destroyed
@@ -195,7 +195,7 @@ onUnmounted(() => {
                     </div>
                     <div class="p-2">
                         <h1
-                            class="text-lg font-bold flex items-center gap-2 text-neutral-500"
+                            class="text-lg font-bold flex items-center gap-2 text-neutral-500 whitespace-nowrap"
                         >
                             <div class="size-2 rounded-full bg-red-500"></div>
                             ISK lost
@@ -208,7 +208,7 @@ onUnmounted(() => {
                     </div>
                     <div class="p-2">
                         <h1
-                            class="text-lg font-bold flex items-center gap-2 text-neutral-500"
+                            class="text-lg font-bold flex items-center gap-2 text-neutral-500 whitespace-nowrap"
                         >
                             <div class="size-2 rounded-full bg-amber-500"></div>
                             ISK efficiency
