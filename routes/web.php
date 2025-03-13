@@ -1,10 +1,12 @@
 <?php
 
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\WeHypeController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/{character}', [HomeController::class, 'show'])->name('character');
+Route::get('/wehype/{id}', [WeHypeController::class, 'show'])->name('wehype');
 //
 //Route::get('/dashboard', function () {
 //    return Inertia::render('Dashboard');
