@@ -36,6 +36,8 @@ class HomeController extends Controller
         $hours = request('hours');
         $summary = request('summary', false);
 
+        $count = $summary ? 50 : $count;
+
         // Get the current character
         $character = $this->fetchCharacter($character);
         // Fetch the characters latest killmail hashes from zkillboard
@@ -68,7 +70,7 @@ class HomeController extends Controller
                 ->latest('id')
                 ->with('killmailInvolvements')
                 ->when($hours, fn($q) => $q->where('time', '>', now()->subHours($hours)))
-                ->take($summary ? 50 : $count)
+                ->take($count)
                 ->get(),
             'count' => $count,
             'hours' => $hours ?? 24,
