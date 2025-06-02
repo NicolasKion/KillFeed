@@ -90,7 +90,7 @@ class ListenForKills extends Command
 
     private function fetchNextKillmail(): ?RedisQKillmail
     {
-        $request = Http::get('https://redisq.zkillboard.com/listen.php', [
+        $request = Http::get('https://zkillredisq.stream/listen.php', [
             'queueID' => $this->queue_id,
         ]);
 
