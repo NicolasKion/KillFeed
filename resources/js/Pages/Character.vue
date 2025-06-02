@@ -80,6 +80,7 @@ onUnmounted(() => {
 <template>
     <Head :title="character.name"/>
     <div
+
         :class="{
             'bg-neutral-900': summary,
         }"
@@ -92,86 +93,88 @@ onUnmounted(() => {
             :style="{
                 gridTemplateColumns: 'repeat(' + count + ', 1fr)',
             }"
-            class="gap inline-grid overflow-x-hidden divide-neutral-800 divide-x text-white border border-neutral-800 overflow-hidden bg-neutral-900"
+            class="gap inline-grid divide-neutral-800 divide-x text-white border border-neutral-800 overflow-hidden bg-neutral-900"
         >
-            <div v-for="killmail in displayed_killmails" class="">
-                <div
-                    :style="{
+            <TransitionGroup name="list">
+                <div v-for="killmail in displayed_killmails" :key="killmail.id" class="">
+                    <div
+                        :style="{
                         backgroundImage: `url(https://images.evetech.net/types/${killmail.ship_type_id}/render?size=128)`,
                     }"
-                    class="size-32"
-                ></div>
-                <div
-                    class="grid grid-cols-[auto,1fr,auto] items-center gap-2 px-2 text-lg p-1"
-                >
+                        class="size-32"
+                    ></div>
                     <div
-                        :class="{
+                        class="grid grid-cols-[auto,1fr,auto] items-center gap-2 px-2 text-lg p-1"
+                    >
+                        <div
+                            :class="{
                             'bg-red-500':
                                 killmail.character_id === character.id,
                             'bg-green-500':
                                 killmail.character_id !== character.id,
                         }"
-                        class="size-2 rounded-full"
-                    ></div>
-                    <p class="font-bold mr-auto">
-                        {{ intl.format(killmail.value) }}
-                    </p>
-                    <span v-if="killmail.solo" class="text-neutral-500"
-                    >solo</span
+                            class="size-2 rounded-full"
+                        ></div>
+                        <p class="font-bold mr-auto">
+                            {{ intl.format(killmail.value) }}
+                        </p>
+                        <span v-if="killmail.solo" class="text-neutral-500"
+                        >solo</span
+                        >
+                        <span v-else class="text-neutral-500">{{
+                                killmail.killmail_involvements.length
+                            }}</span>
+                    </div>
+                </div>
+                <div
+                    v-for="i in placeholders"
+                    v-if="killmails.length < count"
+                    class=""
+                >
+                    <svg
+                        class="size-32"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
                     >
-                    <span v-else class="text-neutral-500">{{
-                            killmail.killmail_involvements.length
-                        }}</span>
-                </div>
-            </div>
-            <div
-                v-for="i in placeholders"
-                v-if="killmails.length < count"
-                class=""
-            >
-                <svg
-                    class="size-32"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                >
-                    <line
-                        stroke-width="0.01"
-                        x1="0"
-                        x2="24"
-                        y1="0"
-                        y2="24"
-                    ></line>
-                    <line
-                        stroke-width="0.01"
-                        x1="0"
-                        x2="24"
-                        y1="24"
-                        y2="0"
-                    ></line>
-                </svg>
-                <div
-                    class="border-t border-neutral-800 flex justify-center items-center p-1"
-                >
-                    <p class="text-neutral-500 font-bold">N/A</p>
-                </div>
-            </div>
-            <div
-                v-if="killmails_count > count"
-                class="text-neutral-500 bg-neutral-900"
-            >
-                <div
-                    class="flex aspect-square justify-center items-center text-4xl font-extrabold"
-                >
-                    + {{ killmails_count - displayed_killmails.length }}
+                        <line
+                            stroke-width="0.01"
+                            x1="0"
+                            x2="24"
+                            y1="0"
+                            y2="24"
+                        ></line>
+                        <line
+                            stroke-width="0.01"
+                            x1="0"
+                            x2="24"
+                            y1="24"
+                            y2="0"
+                        ></line>
+                    </svg>
+                    <div
+                        class="border-t border-neutral-800 flex justify-center items-center p-1"
+                    >
+                        <p class="text-neutral-500 font-bold">N/A</p>
+                    </div>
                 </div>
                 <div
-                    class="flex justify-center items-center py-2 border-t border-neutral-800"
+                    v-if="killmails_count > count"
+                    class="text-neutral-500 bg-neutral-900"
                 >
-                    <p class="text-center">last {{ hours }} hours</p>
+                    <div
+                        class="flex aspect-square justify-center items-center text-4xl font-extrabold"
+                    >
+                        + {{ killmails_count - displayed_killmails.length }}
+                    </div>
+                    <div
+                        class="flex justify-center items-center py-2 border-t border-neutral-800"
+                    >
+                        <p class="text-center">last {{ hours }} hours</p>
+                    </div>
                 </div>
-            </div>
+            </TransitionGroup>
         </div>
         <div v-if="summary" class="absolute inset-0 left-auto">
             <div
@@ -184,7 +187,7 @@ onUnmounted(() => {
                         <h1
                             class="text-lg font-bold flex items-center gap-2 text-neutral-500 whitespace-nowrap"
                         >
-                            <div class="size-2 rounded-full bg-green-500"></div>
+                            <span class="size-2 rounded-full bg-green-500"></span>
                             ISK destroyed
                         </h1>
                         <p
@@ -197,7 +200,7 @@ onUnmounted(() => {
                         <h1
                             class="text-lg font-bold flex items-center gap-2 text-neutral-500 whitespace-nowrap"
                         >
-                            <div class="size-2 rounded-full bg-red-500"></div>
+                            <span class="size-2 rounded-full bg-red-500"></span>
                             ISK lost
                         </h1>
                         <p
@@ -210,7 +213,7 @@ onUnmounted(() => {
                         <h1
                             class="text-lg font-bold flex items-center gap-2 text-neutral-500 whitespace-nowrap"
                         >
-                            <div class="size-2 rounded-full bg-amber-500"></div>
+                            <span class="size-2 rounded-full bg-amber-500"></span>
                             ISK efficiency
                         </h1>
                         <p
@@ -224,3 +227,22 @@ onUnmounted(() => {
         </div>
     </div>
 </template>
+<style>
+.list-move, /* apply transition to moving elements */
+.list-enter-active,
+.list-leave-active {
+    transition: all 0.5s ease;
+}
+
+.list-enter-from,
+.list-leave-to {
+    opacity: 0;
+    transform: translateY(30px);
+}
+
+/* ensure leaving items are taken out of layout flow so that moving
+   animations can be calculated correctly. */
+.list-leave-active {
+    position: absolute;
+}
+</style>
