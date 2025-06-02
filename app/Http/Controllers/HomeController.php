@@ -7,6 +7,7 @@ use App\Jobs\ProcessKillmail;
 use App\Models\Character;
 use App\Models\Killmail;
 use App\Services\CacheService;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Psr\Container\ContainerExceptionInterface;
@@ -27,6 +28,7 @@ class HomeController extends Controller
     /**
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
+     * @throws ConnectionException
      */
     public function show(?int $character)
     {
@@ -62,11 +64,12 @@ class HomeController extends Controller
 
         return inertia('Character', [
             'character' => $character,
-            'killmails' => Killmail::whereHas('killmailInvolvements', fn($q) => $q->where('character_id', $character->id))
+            'killmails' => Killmail::query()->whereHas('killmailInvolvements', fn($q) => $q->where('character_id', $character->id))
                 ->latest('id')
                 ->with('killmailInvolvements')
                 ->when($hours, fn($q) => $q->where('time', '>', now()->subHours($hours)))
-                ->take($count)->get(),
+                ->take($summary ? 50 : $count)
+                ->get(),
             'count' => $count,
             'hours' => $hours ?? 24,
             'summary' => $summary,
@@ -76,6 +79,9 @@ class HomeController extends Controller
         ]);
     }
 
+    /**
+     * @throws ConnectionException
+     */
     private function fetchCharacter(?int $character_id): Character
     {
         $character = Character::query()->whereNotNull('name')->find($character_id);
@@ -104,6 +110,9 @@ class HomeController extends Controller
     }
 
 
+    /**
+     * @throws ConnectionException
+     */
     private function getKillmails(int $character, int $count = 5): void
     {
         $cacheKey = "character:$character:killmails";

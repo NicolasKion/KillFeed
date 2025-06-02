@@ -6,9 +6,9 @@ use App\DTO\EsiKillmailAttacker;
 use App\DTO\RedisQKillmail;
 use App\Models\Character;
 use App\Services\KillmailService;
-use Cache;
 use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 
@@ -36,7 +36,12 @@ class ListenForKills extends Command
     {
         parent::__construct();
 
-        $this->queue_id = sprintf('killfeed_%s', Str::random(16));
+        $this->queue_id = $this->createQueueId();
+    }
+
+    private function createQueueId(): string
+    {
+        return sprintf('killfeed_%s', Str::random(16));
     }
 
     /**
@@ -76,6 +81,11 @@ class ListenForKills extends Command
         }
     }
 
+    /**
+     * Get the IDs of characters that are currently being monitored.
+     *
+     * @return Collection<int, int>
+     */
     private function getCharacterIdsToMonitor(): Collection
     {
         return Character::query()->where('listening_since', '>', now()->subMinutes(5))->pluck('id');
@@ -106,6 +116,11 @@ class ListenForKills extends Command
         return RedisQKillmail::fromArray($request->json());
     }
 
+    /**
+     * @param Collection<int, int> $characters
+     * @param RedisQKillmail $killmail
+     * @return bool
+     */
     private function isKillmailOfInterest(Collection $characters, RedisQKillmail $killmail): bool
     {
         if ($characters->contains($killmail->esi->victim->character_id)) {
