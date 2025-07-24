@@ -30,7 +30,7 @@ class zKillKillmail
         return new self(
             id: $data['killmail_id'] ?? $data['killID'] ?? null,
             hash: $data['zkb']['hash'],
-            location_id: $data['zkb']['locationID'],
+            location_id: $data['zkb']['locationID'] ?? 0,
             fitted_value: $data['zkb']['fittedValue'],
             total_value: $data['zkb']['totalValue'],
             dropped_value: $data['zkb']['droppedValue'],
