@@ -33,7 +33,7 @@ class HomeController extends Controller
     public function show(?int $character)
     {
         $count = request('count', 5);
-        $hours = request('hours');
+        $hours = request('hours', 168) ?: 168; // Default to 7 days if not specified
         $summary = request('summary', false);
 
         $count = $summary ? 50 : $count;

@@ -30,7 +30,7 @@ const size = computed(() => {
     return `${summary.value ? size_kills + size_summary : size_kills}x${166}`;
 });
 
-const hours = ref(0);
+const hours = ref(24);
 </script>
 
 <template>
@@ -61,12 +61,13 @@ const hours = ref(0);
                 />
             </li>
             <li>
-                Filter out killmails older than a certain number of hours. Set
-                to 0 to disable.
+                Filter out killmails older than a certain number of hours. Maximum is 7 days (168 hours).
                 <input
                     v-model="hours"
                     class="border border-gray-300 rounded-md p-2 w-full mt-2"
                     type="number"
+                    min="1"
+                    max="168"
                 />
             </li>
             <li>
