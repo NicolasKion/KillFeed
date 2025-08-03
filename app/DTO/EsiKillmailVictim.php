@@ -29,7 +29,7 @@ readonly class EsiKillmailVictim
             character_id: $data['character_id'] ?? null,
             corporation_id: $data['corporation_id'] ?? null,
             faction_id: $data['faction_id'] ?? null,
-            position: $data['position'] ? EsiKillmailPosition::fromArray($data['position']) : null,
+            position: isset($data['position']) ? EsiKillmailPosition::fromArray($data['position']) : null,
             ship_type_id: $data['ship_type_id'] ?? null
         );
     }
