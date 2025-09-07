@@ -11,6 +11,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
+use function sleep;
 
 class ListenForKills extends Command
 {
@@ -59,24 +60,26 @@ class ListenForKills extends Command
             $characters = Cache::remember('characters_to_monitor', 30, fn() => $this->getCharacterIdsToMonitor());
 
             if ($characters->isEmpty()) {
-                $this->debug('No characters to monitor, sleeping for 30 seconds');
+                $this->info('No characters to monitor, sleeping for 30 seconds');
                 sleep(30);
                 continue;
             }
 
             $maybe_killmail = $this->fetchNextKillmail();
             if ($maybe_killmail === null) {
-                $this->debug('No killmails to process, sleeping for 60 seconds');
+                $this->info('No killmails to process, sleeping for 60 seconds');
                 sleep(60);
                 continue;
             }
 
+            sleep(1); // Respect zKillboard rate limit
+
             if (!$this->isKillmailOfInterest($characters, $maybe_killmail)) {
-                $this->debug('Killmail not of interest, skipping');
+                $this->info('Killmail not of interest, skipping');
                 continue;
             }
 
-            $this->debug('Processing killmail');
+            $this->info('Processing killmail');
             $killmailService->store($maybe_killmail->esi, $maybe_killmail->zkb);
         }
     }
@@ -89,13 +92,6 @@ class ListenForKills extends Command
     private function getCharacterIdsToMonitor(): Collection
     {
         return Character::query()->where('listening_since', '>', now()->subMinutes(5))->pluck('id');
-    }
-
-    private function debug(string $message): void
-    {
-        if (config('app.debug')) {
-            $this->info($message);
-        }
     }
 
     private function fetchNextKillmail(): ?RedisQKillmail
