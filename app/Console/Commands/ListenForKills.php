@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\DTO\EsiKillmailAttacker;
 use App\DTO\RedisQKillmail;
+use App\Jobs\ProcessKillmail;
 use App\Models\Character;
 use App\Services\KillmailService;
 use Illuminate\Console\Command;
@@ -11,6 +12,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
+use function dispatch;
 use function sleep;
 
 class ListenForKills extends Command
@@ -48,7 +50,7 @@ class ListenForKills extends Command
     /**
      * Execute the console command.
      */
-    public function handle(KillmailService $killmailService): void
+    public function handle( ): void
     {
         $this->trap([
             SIGTERM,
@@ -74,13 +76,7 @@ class ListenForKills extends Command
 
             sleep(1); // Respect zKillboard rate limit
 
-            if (!$this->isKillmailOfInterest($characters, $maybe_killmail)) {
-                $this->info('Killmail not of interest, skipping');
-                continue;
-            }
-
-            $this->info('Processing killmail');
-            $killmailService->store($maybe_killmail->esi, $maybe_killmail->zkb);
+            dispatch(new ProcessKillmail($maybe_killmail->killmail_id,$maybe_killmail->zkb->hash, $maybe_killmail->zkb));
         }
     }
 
@@ -110,19 +106,5 @@ class ListenForKills extends Command
         }
 
         return RedisQKillmail::fromArray($request->json());
-    }
-
-    /**
-     * @param Collection<int, int> $characters
-     * @param RedisQKillmail $killmail
-     * @return bool
-     */
-    private function isKillmailOfInterest(Collection $characters, RedisQKillmail $killmail): bool
-    {
-        if ($characters->contains($killmail->esi->victim->character_id)) {
-            return true;
-        }
-
-        return collect($killmail->esi->attackers)->contains(fn(EsiKillmailAttacker $attacker) => $characters->contains($attacker->character_id));
     }
 }
