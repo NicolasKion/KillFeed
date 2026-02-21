@@ -67,7 +67,7 @@ final class ProcessKillmail implements ShouldBeUnique, ShouldQueue
 
     public function uniqueId(): string
     {
-        return $this->killmail_id;
+        return (string) $this->killmail_id;
     }
 
     public function middleware(): array
