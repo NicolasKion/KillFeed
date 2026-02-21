@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Jobs;
 
 use App\DTO\EsiKillmail;
@@ -11,7 +13,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Http;
 
-class ProcessKillmail implements ShouldQueue, ShouldBeUnique
+final class ProcessKillmail implements ShouldBeUnique, ShouldQueue
 {
     use Queueable;
 
@@ -19,11 +21,10 @@ class ProcessKillmail implements ShouldQueue, ShouldBeUnique
      * Create a new job instance.
      */
     public function __construct(
-        public int            $killmail_id,
-        public string         $hash,
+        public int $killmail_id,
+        public string $hash,
         public ?zKillKillmail $zKillKillmail = null,
-    )
-    {
+    ) {
         //
     }
 
@@ -34,7 +35,7 @@ class ProcessKillmail implements ShouldQueue, ShouldBeUnique
     {
         $zKillKillmail = $this->zKillKillmail;
 
-        if ($zKillKillmail === null) {
+        if (! $zKillKillmail instanceof zKillKillmail) {
             // Fetch the killmail from zkillboard
             $url = "https://zkillboard.com/api/killID/{$this->killmail_id}/";
             $response = Http::retry(5, 1000)->get($url);

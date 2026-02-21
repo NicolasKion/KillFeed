@@ -1,27 +1,28 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\DTO;
 
-class zKillKillmail
+final class zKillKillmail
 {
     /**
      * Create a new class instance.
      */
     public function __construct(
-        public ?int   $id,
+        public ?int $id,
         public string $hash,
-        public int    $location_id,
-        public float  $fitted_value,
-        public float  $total_value,
-        public int    $dropped_value,
-        public int    $destroyed_value,
-        public int    $points,
-        public bool   $npc,
-        public bool   $solo,
-        public bool   $awox,
-        public array  $labels,
-    )
-    {
+        public int $location_id,
+        public float $fitted_value,
+        public float $total_value,
+        public int $dropped_value,
+        public int $destroyed_value,
+        public int $points,
+        public bool $npc,
+        public bool $solo,
+        public bool $awox,
+        public array $labels,
+    ) {
         //
     }
 

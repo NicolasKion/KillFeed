@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Collection;
@@ -24,9 +26,10 @@ use Illuminate\Support\Carbon;
  * @property-read Character $character
  * @property-read Collection<int, KillmailInvolvement> $killmailInvolvements
  */
-class Killmail extends Model
+final class Killmail extends Model
 {
     public $incrementing = false;
+
     protected $fillable = [
         'id',
         'character_id',

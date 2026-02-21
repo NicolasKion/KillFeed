@@ -1,23 +1,24 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\DTO;
 
-readonly class zKillSimpleKillmail
+final readonly class zKillSimpleKillmail
 {
     /**
      * Create a new class instance.
      */
     public function __construct(
-        public int    $KillID,
+        public int $KillID,
         public string $action,
         public string $hash,
-        public int    $character_id,
-        public int    $ship_type_id,
-        public int    $corporation_id,
+        public int $character_id,
+        public int $ship_type_id,
+        public int $corporation_id,
         public string $url,
-        public ?int   $alliance_id = null,
-    )
-    {
+        public ?int $alliance_id = null,
+    ) {
         //
     }
 

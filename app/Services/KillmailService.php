@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services;
 
 use App\DTO\EsiKillmail;
@@ -8,7 +10,7 @@ use App\Models\Character;
 use App\Models\Killmail;
 use Illuminate\Support\Facades\DB;
 
-class KillmailService
+final class KillmailService
 {
     /**
      * Create a new class instance.
@@ -18,10 +20,9 @@ class KillmailService
         //
     }
 
-
     public function store(EsiKillmail $esi_killmail, zKillKillmail $zKillKillmail): void
     {
-        DB::transaction(function () use ($esi_killmail, $zKillKillmail) {
+        DB::transaction(function () use ($esi_killmail, $zKillKillmail): void {
 
             $killmail_id = $zKillKillmail->id ?? $esi_killmail->killmail_id;
             $hash = $zKillKillmail->hash;
@@ -29,7 +30,7 @@ class KillmailService
             $attackers = collect($esi_killmail->attackers)->whereNotNull('character_id')->whereNotNull('corporation_id');
             $character_ids = $attackers->pluck('character_id')->push($esi_killmail->victim->character_id)->unique()->whereNotNull();
 
-            $character_ids->each(fn($character_id) => Character::updateOrCreate(['id' => $character_id], ['id' => $character_id]));
+            $character_ids->each(fn ($character_id) => Character::updateOrCreate(['id' => $character_id], ['id' => $character_id]));
 
             $killmail = Killmail::updateOrCreate(
                 ['id' => $killmail_id],
@@ -49,12 +50,12 @@ class KillmailService
                 ]
             );
 
-            $involvements = $attackers->map(fn($attacker) => [
+            $involvements = $attackers->map(fn ($attacker): array => [
                 'character_id' => $attacker->character_id,
                 'is_attacker' => true,
             ]);
 
-            $involvements->each(fn($involvement) => $killmail->killmailInvolvements()->updateOrCreate($involvement));
+            $involvements->each(fn ($involvement) => $killmail->killmailInvolvements()->updateOrCreate($involvement));
 
             if ($esi_killmail->victim->character_id !== null) {
                 $killmail->killmailInvolvements()->updateOrCreate([

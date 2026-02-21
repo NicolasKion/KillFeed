@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Console\Commands;
 
 use App\Jobs\ProcessKillmail;
 use Illuminate\Console\Command;
 
-class GetKillmail extends Command
+final class GetKillmail extends Command
 {
     /**
      * The name and signature of the console command.
@@ -24,7 +26,7 @@ class GetKillmail extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): void
     {
         ProcessKillmail::dispatchSync(
             killmail_id: $this->argument('killmail_id'),

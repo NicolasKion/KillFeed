@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Carbon\Carbon;
@@ -13,9 +15,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property Carbon|string $listening_since
  * @property-read Collection<int, KillmailInvolvement> $killmailInvolvements
  */
-class Character extends Model
+final class Character extends Model
 {
     public $incrementing = false;
+
     protected $fillable = [
         'id',
         'name',

@@ -1,16 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\DTO;
 
-readonly class RedisQKillmail
+final readonly class RedisQKillmail
 {
-    function __construct(
+    public function __construct(
         public zKillKillmail $zkb,
         public int $killmail_id,
-    )
-    {
-
-    }
+    ) {}
 
     public static function fromArray(array $data): self
     {

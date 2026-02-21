@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Jobs\Middleware;
 
 use Closure;
 
-class NotDuringDowntime
+final class NotDuringDowntime
 {
     public function handle(object $job, Closure $next)
     {

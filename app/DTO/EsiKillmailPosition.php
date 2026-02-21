@@ -1,16 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\DTO;
 
-readonly class EsiKillmailPosition
+final readonly class EsiKillmailPosition
 {
     public function __construct(
         public float $x,
         public float $y,
         public float $z
-    )
-    {
-    }
+    ) {}
 
     public static function fromArray(array $data): self
     {

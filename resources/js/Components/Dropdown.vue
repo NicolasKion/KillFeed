@@ -11,7 +11,7 @@ const props = withDefaults(
         align: 'right',
         width: '48',
         contentClasses: 'py-1 bg-white dark:bg-gray-700',
-    }
+    },
 );
 
 const closeOnEscape = (e: KeyboardEvent) => {
@@ -66,7 +66,7 @@ const open = ref(false);
                 style="display: none"
                 @click="open = false"
             >
-                <div class="rounded-md ring-1 ring-black ring-opacity-5" :class="contentClasses">
+                <div class="ring-opacity-5 rounded-md ring-1 ring-black" :class="contentClasses">
                     <slot name="content" />
                 </div>
             </div>

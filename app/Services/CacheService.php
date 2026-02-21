@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services;
 
 use App\DTO\KillmailData;
@@ -8,9 +10,9 @@ use Illuminate\Support\Facades\Cache;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 
-class CacheService
+final class CacheService
 {
-    const SUBSCRIBED_IDS = 'subscribed_ids';
+    public const SUBSCRIBED_IDS = 'subscribed_ids';
 
     /**
      * @throws ContainerExceptionInterface
@@ -19,7 +21,7 @@ class CacheService
     public function addSubscribedId(int $id): void
     {
         $ids = $this->getSubscribedIds();
-        if (!in_array($id, $ids)) {
+        if (! in_array($id, $ids)) {
             $ids[] = $id;
             Cache::put(self::SUBSCRIBED_IDS, $ids);
         }
@@ -31,7 +33,7 @@ class CacheService
      */
     public function getSubscribedIds(): array
     {
-        return Cache::get(self::SUBSCRIBED_IDS, fn() => []);
+        return Cache::get(self::SUBSCRIBED_IDS, fn (): array => []);
     }
 
     /**
@@ -55,7 +57,7 @@ class CacheService
 
     public function getCharacterKillmailIds(int $character_id): Collection
     {
-        return Cache::get("killmails:character:$character_id", fn() => collect());
+        return Cache::get("killmails:character:$character_id", fn (): Collection => collect());
     }
 
     public function hasKillmail(int $killmail_id): bool

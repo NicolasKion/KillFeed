@@ -1,22 +1,22 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\DTO;
 
-class EsiKillmailAttacker
+final class EsiKillmailAttacker
 {
     public function __construct(
-        public ?int  $alliance_id,
-        public ?int  $character_id,
-        public ?int  $corporation_id,
-        public int   $damage_done,
-        public ?int  $faction_id,
-        public bool  $final_blow,
+        public ?int $alliance_id,
+        public ?int $character_id,
+        public ?int $corporation_id,
+        public int $damage_done,
+        public ?int $faction_id,
+        public bool $final_blow,
         public float $security_status,
-        public ?int  $ship_type_id,
-        public ?int  $weapon_type_id
-    )
-    {
-    }
+        public ?int $ship_type_id,
+        public ?int $weapon_type_id
+    ) {}
 
     public static function fromArray(array $data): self
     {
