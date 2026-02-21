@@ -1,11 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Console\Commands;
 
 use App\Models\Killmail;
 use Illuminate\Console\Command;
+use Illuminate\Container\Attributes\Config;
 
-class PurgeOldKillmails extends Command
+final class PurgeOldKillmails extends Command
 {
     /**
      * The name and signature of the console command.
@@ -24,13 +27,13 @@ class PurgeOldKillmails extends Command
     /**
      * Execute the console command.
      */
-    public function handle():int
+    public function handle(#[Config('killfeed.max_killmail_age_hours')] int $maxKillmailAgeHours): int
     {
         $rows_deleted = Killmail::query()
-            ->where('killmails.time', '<', now()->subMonths(3))
+            ->where('killmails.time', '<', now()->subHours($maxKillmailAgeHours))
             ->delete();
 
-        $this->info(sprintf('Deleted %d old killmails', $rows_deleted));
+        $this->info(sprintf('Deleted %d killmails older than %d hours', $rows_deleted, $maxKillmailAgeHours));
 
         return self::SUCCESS;
     }
