@@ -29,8 +29,8 @@ final class GetKillmail extends Command
     public function handle(): void
     {
         ProcessKillmail::dispatchSync(
-            killmail_id: $this->argument('killmail_id'),
-            hash: $this->argument('hash'),
+            killmail_id: (int) $this->argument('killmail_id'),
+            hash: (string) $this->argument('hash'),
         );
     }
 }

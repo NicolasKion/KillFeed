@@ -51,7 +51,9 @@ final class ListenForKills extends Command
         $this->trap([
             SIGTERM,
             SIGQUIT,
-        ], fn (): false => $this->should_keep_running = false);
+        ], function (int $signal): void {
+            $this->should_keep_running = false;
+        });
 
         while ($this->should_keep_running) {
             $characters = Cache::remember('characters_to_monitor', 30, fn (): Collection => $this->getCharacterIdsToMonitor());
