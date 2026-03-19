@@ -24,6 +24,7 @@ final class ProcessKillmail implements ShouldBeUnique, ShouldQueue
         public int $killmail_id,
         public string $hash,
         public ?zKillKillmail $zKillKillmail = null,
+        public ?EsiKillmail $esiKillmail = null,
     ) {
         //
     }
@@ -34,35 +35,24 @@ final class ProcessKillmail implements ShouldBeUnique, ShouldQueue
     public function handle(KillmailService $killmailService): void
     {
         $zKillKillmail = $this->zKillKillmail;
+        $esiKillmail = $this->esiKillmail;
 
         if (! $zKillKillmail instanceof zKillKillmail) {
-            // Fetch the killmail from zkillboard
-            $url = "https://zkillboard.com/api/killID/{$this->killmail_id}/";
+            return;
+        }
+
+        if (! $esiKillmail instanceof EsiKillmail) {
+            $url = "https://esi.evetech.net/latest/killmails/{$this->killmail_id}/{$this->hash}/";
             $response = Http::retry(5, 1000)->get($url);
 
             if ($response->failed()) {
                 return;
             }
 
-            $data = $response->json();
-
-            $zKillKillmail = zKillKillmail::fromArray($data[0]);
+            $esiKillmail = EsiKillmail::fromArray($response->json());
         }
 
-        // Fetch killmail from ESI
-
-        $url = "https://esi.evetech.net/latest/killmails/{$this->killmail_id}/{$this->hash}/";
-        $response = Http::retry(5, 1000)->get($url);
-
-        if ($response->failed()) {
-            return;
-        }
-
-        $data = $response->json();
-
-        $esi_killmail = EsiKillmail::fromArray($data);
-
-        $killmailService->store($esi_killmail, $zKillKillmail);
+        $killmailService->store($esiKillmail, $zKillKillmail);
     }
 
     public function uniqueId(): string
