@@ -8,8 +8,8 @@ use App\Jobs\ProcessKillmail;
 use App\Models\Killmail;
 use Illuminate\Support\Facades\Http;
 
-test('it stores a killmail when full data is provided without HTTP calls', function () {
-    Http::fake();
+test('it stores a killmail when full data is provided without fetching it', function () {
+    fakeEsiTypes(meta_group_id: 2);
 
     $esi = EsiKillmail::fromArray([
         'killmail_id' => 99999,
@@ -59,12 +59,16 @@ test('it stores a killmail when full data is provided without HTTP calls', funct
 
     (new ProcessKillmail(99999, 'testhash123', $zkb, $esi))->handle(app(App\Services\KillmailService::class));
 
-    Http::assertNothingSent();
-    expect(Killmail::find(99999))->not->toBeNull()
-        ->and(Killmail::find(99999)->hash)->toBe('testhash123');
+    Http::assertNotSent(fn ($request): bool => str_contains((string) $request->url(), '/killmails/'));
+
+    $killmail = Killmail::find(99999);
+    expect($killmail)->not->toBeNull()
+        ->and($killmail->hash)->toBe('testhash123')
+        ->and($killmail->ship_meta_group_id)->toBe(2);
 });
 
 test('it fetches ESI killmail when esiKillmail is null', function () {
+    fakeEsiTypes();
     Http::fake([
         'https://esi.evetech.net/latest/killmails/88888/fallbackhash/' => Http::response([
             'killmail_id' => 88888,
@@ -115,8 +119,11 @@ test('it fetches ESI killmail when esiKillmail is null', function () {
 
     (new ProcessKillmail(88888, 'fallbackhash', $zkb))->handle(app(App\Services\KillmailService::class));
 
-    Http::assertSentCount(1);
-    expect(Killmail::find(88888))->not->toBeNull();
+    Http::assertSentCount(2);
+
+    $killmail = Killmail::find(88888);
+    expect($killmail)->not->toBeNull()
+        ->and($killmail->ship_meta_group_id)->toBe(1);
 });
 
 test('it returns early when zKillKillmail is null', function () {

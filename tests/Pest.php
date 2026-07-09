@@ -3,48 +3,39 @@
 declare(strict_types=1);
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
-/*
-|--------------------------------------------------------------------------
-| Test Case
-|--------------------------------------------------------------------------
-|
-| The closure you provide to your test functions is always bound to a specific PHPUnit test
-| case class. By default, that class is "PHPUnit\Framework\TestCase". Of course, you may
-| need to change it using the "uses()" function to bind a different classes or traits.
-|
-*/
+pest()->extend(TestCase::class)
+    ->use(RefreshDatabase::class)
+    ->in('Feature', 'Browser');
 
-uses(TestCase::class, RefreshDatabase::class)->in('Feature');
-
-/*
-|--------------------------------------------------------------------------
-| Expectations
-|--------------------------------------------------------------------------
-|
-| When you're writing tests, you often need to check that values meet certain conditions. The
-| "expect()" function gives you access to a set of "expectations" methods that you can use
-| to assert different things. Of course, you may extend the Expectation API at any time.
-|
-*/
-
-expect()->extend('toBeOne', function () {
-    return $this->toBe(1);
-});
-
-/*
-|--------------------------------------------------------------------------
-| Functions
-|--------------------------------------------------------------------------
-|
-| While Pest is very powerful out-of-the-box, you may have some testing code specific to your
-| project that you don't want to repeat in every file. Here you can also expose helpers as
-| global functions to help you to reduce the number of lines of code in your test files.
-|
-*/
-
-function something()
+/**
+ * Fake the ESI type lookups used to resolve ship meta groups.
+ */
+function fakeEsiTypes(?int $meta_group_id = null, ?int $tech_level = null): void
 {
-    // ..
+    $attributes = collect([
+        App\Services\ShipTypeService::META_GROUP_ATTRIBUTE_ID => $meta_group_id,
+        App\Services\ShipTypeService::TECH_LEVEL_ATTRIBUTE_ID => $tech_level,
+    ])
+        ->reject(fn (?int $value): bool => $value === null)
+        ->map(fn (int $value, int $attribute_id): array => ['attribute_id' => $attribute_id, 'value' => (float) $value])
+        ->values();
+
+    Http::fake([
+        'https://esi.evetech.net/latest/universe/types/*' => Http::response([
+            'dogma_attributes' => $attributes->all(),
+        ]),
+    ]);
+}
+
+/**
+ * Fake zKillboard's character killmail listing.
+ */
+function fakeZkillboard(array $killmails = []): void
+{
+    Http::fake([
+        'https://zkillboard.com/api/characterID/*' => Http::response($killmails),
+    ]);
 }
