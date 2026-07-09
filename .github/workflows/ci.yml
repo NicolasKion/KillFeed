@@ -14,7 +14,7 @@ jobs:
     name: PHP Quality (Pint, PHPStan, Rector)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
       - uses: shivammathur/setup-php@v2
         with:
@@ -36,9 +36,9 @@ jobs:
     name: Frontend Quality (Prettier, ESLint, vue-tsc)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: '22'
           cache: npm
@@ -59,7 +59,7 @@ jobs:
     name: Tests (Pest)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
       - uses: shivammathur/setup-php@v2
         with:
@@ -69,7 +69,7 @@ jobs:
 
       - uses: ramsey/composer-install@v3
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: '22'
           cache: npm
