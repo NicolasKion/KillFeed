@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Database\Factories\KillmailFactory;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -20,6 +22,7 @@ use Illuminate\Support\Carbon;
  * @property int|null $corporation_id
  * @property int|null $alliance_id
  * @property int $ship_type_id
+ * @property int|null $ship_meta_group_id
  * @property int $damage_taken
  * @property float $value
  * @property bool $solo
@@ -28,6 +31,9 @@ use Illuminate\Support\Carbon;
  */
 final class Killmail extends Model
 {
+    /** @use HasFactory<KillmailFactory> */
+    use HasFactory;
+
     public $incrementing = false;
 
     protected $fillable = [
@@ -40,6 +46,7 @@ final class Killmail extends Model
         'corporation_id',
         'alliance_id',
         'ship_type_id',
+        'ship_meta_group_id',
         'damage_taken',
         'value',
         'solo',

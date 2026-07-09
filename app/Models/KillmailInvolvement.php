@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Database\Factories\KillmailInvolvementFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -16,6 +18,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 final class KillmailInvolvement extends Model
 {
+    /** @use HasFactory<KillmailInvolvementFactory> */
+    use HasFactory;
+
     protected $fillable = [
         'killmail_id',
         'character_id',

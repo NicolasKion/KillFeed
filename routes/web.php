@@ -3,11 +3,10 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\WeHypeController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
-Route::get('/wehype/{id}', [WeHypeController::class, 'show'])->name('wehype');
+Route::get('/demo', [HomeController::class, 'demo'])->name('demo');
 Route::get('/characters/{character}/preview', [HomeController::class, 'preview'])
     ->whereNumber('character')
     ->name('character.preview');

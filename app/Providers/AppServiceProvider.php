@@ -23,7 +23,7 @@ final class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Http::globalRequestMiddleware(fn ($request) => $request->withHeader(
-            'User-Agent', 'KillFeed - Nicolas Kion (https://killfeed.mutamarket.com)'
+            'User-Agent', 'KillFeed/1.0 (https://killfeed.killmail.space; nicolaskion07@gmail.com; EVE: Nicolas Kion)'
         ));
     }
 }

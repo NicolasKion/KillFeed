@@ -5,7 +5,11 @@ declare(strict_types=1);
 namespace App\Models;
 
 use Carbon\Carbon;
+use Database\Factories\CharacterFactory;
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
@@ -17,6 +21,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 final class Character extends Model
 {
+    /** @use HasFactory<CharacterFactory> */
+    use HasFactory;
+
     public $incrementing = false;
 
     protected $fillable = [
@@ -37,6 +44,17 @@ final class Character extends Model
     {
         $this->listening_since = now();
         $this->save();
+    }
+
+    /**
+     * Characters with an overlay open recently enough to monitor.
+     *
+     * @param  Builder<Character>  $query
+     */
+    #[Scope]
+    protected function listening(Builder $query): void
+    {
+        $query->where('listening_since', '>', now()->subMinutes(5));
     }
 
     protected function casts(): array

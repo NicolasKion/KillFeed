@@ -4,14 +4,15 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
+use App\DTO\EsiKillmail;
 use App\DTO\R2Z2Killmail;
 use App\Enums\CacheKey;
 use App\Jobs\ProcessKillmail;
 use App\Models\Character;
+use App\Services\R2Z2Client;
 use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
 use function dispatch;
@@ -25,16 +26,15 @@ final class ListenForKills extends Command
 
     private bool $shouldKeepRunning = true;
 
-    public function handle(): void
+    public function handle(R2Z2Client $r2z2Client): void
     {
         $this->trap([SIGTERM, SIGQUIT], function (): void {
             $this->shouldKeepRunning = false;
         });
 
-        $baseUrl = config('killfeed.r2z2.base_url');
         $maxConsecutive404s = config('killfeed.r2z2.max_consecutive_404s');
 
-        $sequenceId = $this->resolveStartSequence($baseUrl);
+        $sequenceId = $this->resolveStartSequence($r2z2Client);
         if ($sequenceId === null) {
             Log::error('R2Z2: Failed to bootstrap sequence');
             $this->error('Failed to bootstrap sequence from R2Z2');
@@ -53,7 +53,7 @@ final class ListenForKills extends Command
                 break;
             }
 
-            $response = Http::get("{$baseUrl}/{$sequenceId}.json");
+            $response = $r2z2Client->fetch($sequenceId);
 
             if ($response->status() === 404) {
                 $consecutive404s++;
@@ -63,7 +63,7 @@ final class ListenForKills extends Command
                 if ($consecutive404s >= $maxConsecutive404s) {
                     Log::warning("R2Z2: Hit {$consecutive404s} consecutive 404s, re-fetching sequence.json");
                     $this->warn("Hit {$consecutive404s} consecutive 404s, re-fetching sequence.json");
-                    $newSequence = $this->fetchCurrentSequence($baseUrl);
+                    $newSequence = $r2z2Client->currentSequence();
                     if ($newSequence !== null) {
                         Log::info("R2Z2: Skipped ahead from {$sequenceId} to {$newSequence}");
                         $this->info("Skipped ahead to sequence {$newSequence}");
@@ -114,7 +114,7 @@ final class ListenForKills extends Command
         }
     }
 
-    private function resolveStartSequence(string $baseUrl): ?int
+    private function resolveStartSequence(R2Z2Client $r2z2Client): ?int
     {
         $cached = Cache::get(CacheKey::R2Z2Sequence->value);
 
@@ -124,24 +124,13 @@ final class ListenForKills extends Command
             return (int) $cached + 1;
         }
 
-        return $this->fetchCurrentSequence($baseUrl);
-    }
-
-    private function fetchCurrentSequence(string $baseUrl): ?int
-    {
-        $response = Http::get("{$baseUrl}/sequence.json");
-
-        if ($response->failed()) {
-            return null;
-        }
-
-        return $response->json('sequence');
+        return $r2z2Client->currentSequence();
     }
 
     /**
      * @param  Collection<int, int>  $characters
      */
-    private function dispatchIfMonitored(R2Z2Killmail $r2z2, \App\DTO\EsiKillmail $esi, Collection $characters): void
+    private function dispatchIfMonitored(R2Z2Killmail $r2z2, EsiKillmail $esi, Collection $characters): void
     {
         if ($characters->isEmpty()) {
             return;
@@ -172,6 +161,6 @@ final class ListenForKills extends Command
      */
     private function getCharacterIdsToMonitor(): Collection
     {
-        return Character::query()->where('listening_since', '>', now()->subMinutes(5))->pluck('id');
+        return Character::query()->listening()->pluck('id');
     }
 }

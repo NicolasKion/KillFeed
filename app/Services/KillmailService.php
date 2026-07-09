@@ -10,12 +10,12 @@ use App\Models\Character;
 use App\Models\Killmail;
 use Illuminate\Support\Facades\DB;
 
-final class KillmailService
+final readonly class KillmailService
 {
     /**
      * Create a new class instance.
      */
-    public function __construct()
+    public function __construct(private ShipTypeService $shipTypeService)
     {
         //
     }
@@ -44,6 +44,7 @@ final class KillmailService
                     'corporation_id' => $esi_killmail->victim->corporation_id,
                     'alliance_id' => $esi_killmail->victim->alliance_id,
                     'ship_type_id' => $esi_killmail->victim->ship_type_id,
+                    'ship_meta_group_id' => $this->shipTypeService->metaGroupId($esi_killmail->victim->ship_type_id),
                     'damage_taken' => $esi_killmail->victim->damage_taken,
                     'value' => $zKillKillmail->total_value,
                     'solo' => $zKillKillmail->solo,
