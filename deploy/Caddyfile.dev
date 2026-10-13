@@ -1,0 +1,26 @@
+# The composed shared origin on :5316: backend paths and requests from
+# Inertia clients go to the API container, page GETs to the SvelteKit
+# node server. Keep the path list in sync with frontend/proxy-paths.ts and
+# deploy/Caddyfile.
+
+:5316 {
+	encode zstd gzip
+	# The security headers production sends too.
+	header {
+		X-Frame-Options SAMEORIGIN
+		X-XSS-Protection "1; mode=block"
+		X-Content-Type-Options nosniff
+	}
+
+	@axum {
+		path /api/* /up /characters/*
+	}
+	reverse_proxy @axum api:3000
+
+	@inertia {
+		header X-Inertia *
+	}
+	reverse_proxy @inertia api:3000
+
+	reverse_proxy frontend:3000
+}

@@ -1,0 +1,28 @@
+# The production site block for the shared Caddy. Same routing as
+# Caddyfile.dev: keep the path list in sync with frontend/proxy-paths.ts.
+# Backend paths go to the api, and so does every request carrying
+# `X-Inertia`: OBS overlays left open on the Laravel site keep polling
+# with it, and the api answers 409 with `X-Inertia-Location`, which makes
+# them reload into the new pages.
+
+killfeed.killmail.space {
+	encode zstd gzip
+	# The headers the Forge nginx config sent.
+	header {
+		X-Frame-Options SAMEORIGIN
+		X-XSS-Protection "1; mode=block"
+		X-Content-Type-Options nosniff
+	}
+
+	@axum {
+		path /api/* /up /characters/*
+	}
+	reverse_proxy @axum killfeed-api:3000
+
+	@inertia {
+		header X-Inertia *
+	}
+	reverse_proxy @inertia killfeed-api:3000
+
+	reverse_proxy killfeed-frontend:3000
+}

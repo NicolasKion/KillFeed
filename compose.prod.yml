@@ -1,0 +1,54 @@
+# Production on the shared server (TimKunze96/infra): only the api and the
+# frontend, from prebuilt images tagged with the commit (IMAGE_TAG in .env).
+# Postgres and Caddy are the server's; both containers join its external
+# `web` network, where Caddy reaches them as killfeed-api and
+# killfeed-frontend (deploy/Caddyfile). Run from /opt/killfeed:
+#   docker compose -f compose.prod.yml up -d
+#
+# .env holds DATABASE_URL (the shared Postgres), IMAGE_TAG and
+# KILLFEED_DISCORD_INVITE_URL. The listener stays off until it is turned
+# on with LISTENER_ENABLED=true (never two listeners at once).
+
+name: killfeed
+
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+services:
+  api:
+    image: killfeed-api:${IMAGE_TAG:?set IMAGE_TAG in .env}
+    container_name: killfeed-api
+    env_file: .env
+    environment:
+      BIND_ADDR: 0.0.0.0:3000
+      APP_URL: https://killfeed.killmail.space
+      EVE_APIS_ENABLED: "true"
+      LISTENER_ENABLED: ${LISTENER_ENABLED:-false}
+      RUST_LOG: ${RUST_LOG:-info}
+    # The listener finishes its current killmail and stores its sequence.
+    stop_grace_period: 15s
+    networks:
+      - web
+    restart: unless-stopped
+    logging: *logging
+
+  frontend:
+    image: killfeed-frontend:${IMAGE_TAG:?set IMAGE_TAG in .env}
+    container_name: killfeed-frontend
+    environment:
+      AXUM_URL: http://killfeed-api:3000
+      ORIGIN: https://killfeed.killmail.space
+      TZ: UTC
+    depends_on:
+      - api
+    networks:
+      - web
+    restart: unless-stopped
+    logging: *logging
+
+networks:
+  web:
+    external: true

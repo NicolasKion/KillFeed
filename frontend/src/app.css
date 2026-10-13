@@ -1,0 +1,18 @@
+@import 'tailwindcss';
+@plugin '@tailwindcss/forms';
+
+@theme {
+  --font-sans: 'Figtree', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Chakra Petch', 'Figtree', ui-sans-serif, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', monospace;
+
+  /* Cold, blue-cast space palette for the setup console. The overlay
+       itself keeps its neutral palette: it is the shipped artifact. */
+  --color-void: #0b0d12;
+  --color-hull: #12151d;
+  --color-plate: #232936;
+  --color-starlight: #e8eaf0;
+  --color-drift: #8a93a6;
+  --color-signal: #e5484d;
+  --color-confirm: #4cc38a;
+}
