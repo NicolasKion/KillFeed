@@ -1,0 +1,500 @@
+{
+  "path": "/93813310",
+  "status": 200,
+  "page": {
+    "component": "Character",
+    "props": {
+      "errors": {},
+      "auth": {
+        "user": null
+      },
+      "count": 50,
+      "hours": 168,
+      "summary": false,
+      "meta": true,
+      "killmails_count": 5,
+      "kills_value": 50000000.5,
+      "losses_value": 254000000,
+      "character": {
+        "id": 93813310,
+        "name": "Victim Pilot",
+        "listening_since": "2026-10-13T12:16:01.000000Z",
+        "created_at": "2026-10-11T10:15:33.000000Z",
+        "updated_at": "2026-10-13T12:16:01.000000Z"
+      },
+      "killmails": [
+        {
+          "id": 120000006,
+          "character_id": 93813310,
+          "hash": "hash120000006",
+          "data": {
+            "victim": {
+              "items": [],
+              "position": null,
+              "faction_id": null,
+              "alliance_id": null,
+              "character_id": 93813310,
+              "damage_taken": 52000,
+              "ship_type_id": 29984,
+              "corporation_id": 98000001
+            },
+            "war_id": 12345,
+            "moon_id": null,
+            "attackers": [
+              {
+                "faction_id": null,
+                "final_blow": true,
+                "alliance_id": null,
+                "damage_done": 52000,
+                "character_id": 2112625428,
+                "ship_type_id": 587,
+                "corporation_id": 98000002,
+                "weapon_type_id": 3170,
+                "security_status": -2.5
+              }
+            ],
+            "killmail_id": 120000006,
+            "killmail_time": "2026-10-13T09:15:33Z",
+            "solar_system_id": 30002187
+          },
+          "time": "2026-10-13T09:15:33.000000Z",
+          "solarsystem_id": 30002187,
+          "corporation_id": 98000001,
+          "alliance_id": null,
+          "ship_type_id": 29984,
+          "ship_meta_group_id": 14,
+          "damage_taken": 52000,
+          "value": null,
+          "solo": 0,
+          "created_at": "2026-10-13T09:16:33.000000Z",
+          "updated_at": "2026-10-13T09:16:33.000000Z",
+          "killmail_involvements": [
+            {
+              "id": 13,
+              "killmail_id": 120000006,
+              "character_id": 2112625428,
+              "is_attacker": true,
+              "created_at": "2026-10-13T09:16:33.000000Z",
+              "updated_at": "2026-10-13T09:16:33.000000Z"
+            },
+            {
+              "id": 14,
+              "killmail_id": 120000006,
+              "character_id": 93813310,
+              "is_attacker": false,
+              "created_at": "2026-10-13T09:16:33.000000Z",
+              "updated_at": "2026-10-13T09:16:33.000000Z"
+            }
+          ]
+        },
+        {
+          "id": 120000005,
+          "character_id": 93813310,
+          "hash": "hash120000005",
+          "data": {
+            "victim": {
+              "items": [],
+              "position": null,
+              "faction_id": null,
+              "alliance_id": null,
+              "character_id": 93813310,
+              "damage_taken": 700,
+              "ship_type_id": 626,
+              "corporation_id": 98000001
+            },
+            "war_id": null,
+            "moon_id": null,
+            "attackers": [
+              {
+                "faction_id": null,
+                "final_blow": true,
+                "alliance_id": null,
+                "damage_done": 700,
+                "character_id": 95465499,
+                "ship_type_id": 24698,
+                "corporation_id": 98000003,
+                "weapon_type_id": 3170,
+                "security_status": 5
+              }
+            ],
+            "killmail_id": 120000005,
+            "killmail_time": "2026-10-13T12:05:33Z",
+            "solar_system_id": 30000142
+          },
+          "time": "2026-10-13T12:05:33.000000Z",
+          "solarsystem_id": 30000142,
+          "corporation_id": 98000001,
+          "alliance_id": null,
+          "ship_type_id": 626,
+          "ship_meta_group_id": 1,
+          "damage_taken": 700,
+          "value": 3000000,
+          "solo": 1,
+          "created_at": "2026-10-13T12:06:33.000000Z",
+          "updated_at": "2026-10-13T12:06:33.000000Z",
+          "killmail_involvements": [
+            {
+              "id": 11,
+              "killmail_id": 120000005,
+              "character_id": 95465499,
+              "is_attacker": true,
+              "created_at": "2026-10-13T12:06:33.000000Z",
+              "updated_at": "2026-10-13T12:06:33.000000Z"
+            },
+            {
+              "id": 12,
+              "killmail_id": 120000005,
+              "character_id": 93813310,
+              "is_attacker": false,
+              "created_at": "2026-10-13T12:06:33.000000Z",
+              "updated_at": "2026-10-13T12:06:33.000000Z"
+            }
+          ]
+        },
+        {
+          "id": 120000003,
+          "character_id": 93813310,
+          "hash": "hash120000003",
+          "data": {
+            "victim": {
+              "items": [],
+              "position": null,
+              "faction_id": null,
+              "alliance_id": null,
+              "character_id": 93813310,
+              "damage_taken": 1500,
+              "ship_type_id": 12044,
+              "corporation_id": 98000001
+            },
+            "war_id": null,
+            "moon_id": null,
+            "attackers": [
+              {
+                "faction_id": null,
+                "final_blow": true,
+                "alliance_id": null,
+                "damage_done": 1000,
+                "character_id": 2112625428,
+                "ship_type_id": 587,
+                "corporation_id": 98000002,
+                "weapon_type_id": 3170,
+                "security_status": -2.5
+              },
+              {
+                "faction_id": null,
+                "final_blow": false,
+                "alliance_id": null,
+                "damage_done": 500,
+                "character_id": 95465499,
+                "ship_type_id": 24698,
+                "corporation_id": 98000003,
+                "weapon_type_id": 3170,
+                "security_status": 5
+              }
+            ],
+            "killmail_id": 120000003,
+            "killmail_time": "2026-10-12T10:15:33Z",
+            "solar_system_id": 30002187
+          },
+          "time": "2026-10-12T10:15:33.000000Z",
+          "solarsystem_id": 30002187,
+          "corporation_id": 98000001,
+          "alliance_id": null,
+          "ship_type_id": 12044,
+          "ship_meta_group_id": null,
+          "damage_taken": 1500,
+          "value": 250000000,
+          "solo": 0,
+          "created_at": "2026-10-12T10:16:33.000000Z",
+          "updated_at": "2026-10-12T10:16:33.000000Z",
+          "killmail_involvements": [
+            {
+              "id": 6,
+              "killmail_id": 120000003,
+              "character_id": 2112625428,
+              "is_attacker": true,
+              "created_at": "2026-10-12T10:16:33.000000Z",
+              "updated_at": "2026-10-12T10:16:33.000000Z"
+            },
+            {
+              "id": 7,
+              "killmail_id": 120000003,
+              "character_id": 95465499,
+              "is_attacker": true,
+              "created_at": "2026-10-12T10:16:33.000000Z",
+              "updated_at": "2026-10-12T10:16:33.000000Z"
+            },
+            {
+              "id": 8,
+              "killmail_id": 120000003,
+              "character_id": 93813310,
+              "is_attacker": false,
+              "created_at": "2026-10-12T10:16:33.000000Z",
+              "updated_at": "2026-10-12T10:16:33.000000Z"
+            }
+          ]
+        },
+        {
+          "id": 120000002,
+          "character_id": 2112625428,
+          "hash": "hash120000002",
+          "data": {
+            "victim": {
+              "items": [
+                {
+                  "flag": 11,
+                  "items": [],
+                  "singleton": 1,
+                  "item_type_id": 3170,
+                  "quantity_dropped": null,
+                  "quantity_destroyed": 1
+                }
+              ],
+              "position": null,
+              "faction_id": null,
+              "alliance_id": 99000001,
+              "character_id": 2112625428,
+              "damage_taken": 98000,
+              "ship_type_id": 17738,
+              "corporation_id": 98000002
+            },
+            "war_id": null,
+            "moon_id": null,
+            "attackers": [
+              {
+                "faction_id": null,
+                "final_blow": true,
+                "alliance_id": null,
+                "damage_done": 60000,
+                "character_id": 95465499,
+                "ship_type_id": 24698,
+                "corporation_id": 98000003,
+                "weapon_type_id": 3170,
+                "security_status": 5
+              },
+              {
+                "faction_id": null,
+                "final_blow": false,
+                "alliance_id": null,
+                "damage_done": 38000,
+                "character_id": 93813310,
+                "ship_type_id": 626,
+                "corporation_id": 98000001,
+                "weapon_type_id": 3170,
+                "security_status": 0.1
+              },
+              {
+                "faction_id": 500010,
+                "final_blow": false,
+                "alliance_id": null,
+                "damage_done": 0,
+                "character_id": null,
+                "ship_type_id": 23913,
+                "corporation_id": null,
+                "weapon_type_id": null,
+                "security_status": 0
+              }
+            ],
+            "killmail_id": 120000002,
+            "killmail_time": "2026-10-13T10:15:33Z",
+            "solar_system_id": 30000142
+          },
+          "time": "2026-10-13T10:15:33.000000Z",
+          "solarsystem_id": 30000142,
+          "corporation_id": 98000002,
+          "alliance_id": 99000001,
+          "ship_type_id": 17738,
+          "ship_meta_group_id": 4,
+          "damage_taken": 98000,
+          "value": 50000000.5,
+          "solo": 0,
+          "created_at": "2026-10-13T10:16:33.000000Z",
+          "updated_at": "2026-10-13T10:16:33.000000Z",
+          "killmail_involvements": [
+            {
+              "id": 3,
+              "killmail_id": 120000002,
+              "character_id": 95465499,
+              "is_attacker": true,
+              "created_at": "2026-10-13T10:16:33.000000Z",
+              "updated_at": "2026-10-13T10:16:33.000000Z"
+            },
+            {
+              "id": 4,
+              "killmail_id": 120000002,
+              "character_id": 93813310,
+              "is_attacker": true,
+              "created_at": "2026-10-13T10:16:33.000000Z",
+              "updated_at": "2026-10-13T10:16:33.000000Z"
+            },
+            {
+              "id": 5,
+              "killmail_id": 120000002,
+              "character_id": 2112625428,
+              "is_attacker": false,
+              "created_at": "2026-10-13T10:16:33.000000Z",
+              "updated_at": "2026-10-13T10:16:33.000000Z"
+            }
+          ]
+        },
+        {
+          "id": 120000001,
+          "character_id": 93813310,
+          "hash": "hash120000001",
+          "data": {
+            "victim": {
+              "items": [
+                {
+                  "flag": 27,
+                  "items": [],
+                  "singleton": 0,
+                  "item_type_id": 2873,
+                  "quantity_dropped": null,
+                  "quantity_destroyed": 1
+                },
+                {
+                  "flag": 5,
+                  "items": [],
+                  "singleton": 0,
+                  "item_type_id": 21894,
+                  "quantity_dropped": 120,
+                  "quantity_destroyed": null
+                },
+                {
+                  "flag": 5,
+                  "items": [
+                    {
+                      "flag": 5,
+                      "items": [],
+                      "singleton": 0,
+                      "item_type_id": 2205,
+                      "quantity_dropped": 2,
+                      "quantity_destroyed": null
+                    }
+                  ],
+                  "singleton": 0,
+                  "item_type_id": 3020,
+                  "quantity_dropped": null,
+                  "quantity_destroyed": null
+                }
+              ],
+              "position": {
+                "x": -107303362560,
+                "y": -18744975360.5,
+                "z": 436489052160.25
+              },
+              "faction_id": null,
+              "alliance_id": null,
+              "character_id": 93813310,
+              "damage_taken": 2400,
+              "ship_type_id": 11176,
+              "corporation_id": 98000001
+            },
+            "war_id": null,
+            "moon_id": null,
+            "attackers": [
+              {
+                "faction_id": null,
+                "final_blow": true,
+                "alliance_id": 99000001,
+                "damage_done": 2400,
+                "character_id": 2112625428,
+                "ship_type_id": 587,
+                "corporation_id": 98000002,
+                "weapon_type_id": 3170,
+                "security_status": -2.5
+              }
+            ],
+            "killmail_id": 120000001,
+            "killmail_time": "2026-10-13T11:45:33Z",
+            "solar_system_id": 30002187
+          },
+          "time": "2026-10-13T11:45:33.000000Z",
+          "solarsystem_id": 30002187,
+          "corporation_id": 98000001,
+          "alliance_id": null,
+          "ship_type_id": 11176,
+          "ship_meta_group_id": 2,
+          "damage_taken": 2400,
+          "value": 1000000,
+          "solo": 1,
+          "created_at": "2026-10-13T11:46:33.000000Z",
+          "updated_at": "2026-10-13T11:46:33.000000Z",
+          "killmail_involvements": [
+            {
+              "id": 1,
+              "killmail_id": 120000001,
+              "character_id": 2112625428,
+              "is_attacker": true,
+              "created_at": "2026-10-13T11:46:33.000000Z",
+              "updated_at": "2026-10-13T11:46:33.000000Z"
+            },
+            {
+              "id": 2,
+              "killmail_id": 120000001,
+              "character_id": 93813310,
+              "is_attacker": false,
+              "created_at": "2026-10-13T11:46:33.000000Z",
+              "updated_at": "2026-10-13T11:46:33.000000Z"
+            }
+          ]
+        }
+      ]
+    },
+    "url": "/93813310",
+    "version": "a7ee6c644d6c4bba14be2af9e65116a6",
+    "sharedProps": [
+      "errors",
+      "auth"
+    ]
+  },
+  "characters": [
+    {
+      "id": 90000001,
+      "name": "Quiet Pilot",
+      "listening_since": null,
+      "created_at": "2026-10-11T10:15:33.000000Z",
+      "updated_at": "2026-10-11T10:15:33.000000Z"
+    },
+    {
+      "id": 93813310,
+      "name": "Victim Pilot",
+      "listening_since": "2026-10-13T12:16:01.000000Z",
+      "created_at": "2026-10-11T10:15:33.000000Z",
+      "updated_at": "2026-10-13T12:16:01.000000Z"
+    },
+    {
+      "id": 95000002,
+      "name": "Old Listener",
+      "listening_since": "2026-10-13T12:05:33.000000Z",
+      "created_at": "2026-10-11T10:15:33.000000Z",
+      "updated_at": "2026-10-13T12:05:33.000000Z"
+    },
+    {
+      "id": 95465499,
+      "name": "Attacker One",
+      "listening_since": null,
+      "created_at": "2026-10-11T10:15:33.000000Z",
+      "updated_at": "2026-10-11T10:15:33.000000Z"
+    },
+    {
+      "id": 2112625428,
+      "name": "Capsuleer Prime",
+      "listening_since": null,
+      "created_at": "2026-10-11T10:15:33.000000Z",
+      "updated_at": "2026-10-11T10:15:33.000000Z"
+    }
+  ],
+  "jobs": [
+    {
+      "job": "BackfillShipMetaGroup",
+      "killmail_id": 120000003,
+      "with_zkill": false,
+      "with_esi": false
+    }
+  ],
+  "requests": [
+    "https://esi.evetech.net/latest/characters/93813310/",
+    "https://zkillboard.com/api/characterID/93813310/"
+  ]
+}

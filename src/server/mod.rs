@@ -16,6 +16,7 @@ use tower_http::normalize_path::NormalizePath;
 
 use crate::clock::Clock;
 use crate::config::Config;
+use crate::eve::Eve;
 
 /// The default bind address of the API server; the SvelteKit dev proxy and
 /// the reverse proxy point at it.
@@ -31,6 +32,8 @@ pub struct AppState {
     pub pool: PgPool,
     pub config: Arc<Config>,
     pub clock: Clock,
+    /// The clients of ESI, zKillboard and R2Z2.
+    pub eve: Eve,
     /// Wakes the queue workers when a job is queued.
     pub jobs: Arc<Notify>,
 }
@@ -39,6 +42,7 @@ impl AppState {
     pub fn new(pool: PgPool, config: Config, clock: Clock) -> Self {
         Self {
             pool,
+            eve: Eve::new(&config.eve, clock.clone()),
             config: Arc::new(config),
             clock,
             jobs: Arc::new(Notify::new()),

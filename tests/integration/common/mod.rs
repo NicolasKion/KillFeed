@@ -183,6 +183,12 @@ impl TestApp {
         }
     }
 
+    /// Runs the job queue until nothing is due, the way the queue workers
+    /// would.
+    pub async fn work_jobs(&self) {
+        killfeed::jobs::work_until_idle(&self.state).await;
+    }
+
     /// The queued jobs, oldest first: `(kind, killmail_id)`.
     pub async fn queued_jobs(&self) -> Vec<(String, i64)> {
         sqlx::query_as("select kind, killmail_id from jobs where failed_at is null order by id")
@@ -196,6 +202,23 @@ impl TestApp {
             .fetch_one(&self.pool)
             .await
             .expect("count")
+    }
+}
+
+/// Waits until `check` holds, for at most five seconds (background
+/// tasks such as the listener).
+pub async fn eventually<F, Fut>(what: &str, mut check: F)
+where
+    F: FnMut() -> Fut,
+    Fut: std::future::Future<Output = bool>,
+{
+    let deadline = tokio::time::Instant::now() + Duration::from_secs(5);
+    while !check().await {
+        assert!(
+            tokio::time::Instant::now() < deadline,
+            "timed out waiting for {what}"
+        );
+        tokio::time::sleep(Duration::from_millis(5)).await;
     }
 }
 

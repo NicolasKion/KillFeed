@@ -1,0 +1,403 @@
+{
+  "esi:universe/types/587": {
+    "status": 200,
+    "body": {
+      "type_id": 587,
+      "name": "Rifter",
+      "published": true,
+      "group_id": 25,
+      "dogma_attributes": [
+        {
+          "attribute_id": 422,
+          "value": 1.0
+        },
+        {
+          "attribute_id": 633,
+          "value": 0.0
+        }
+      ]
+    }
+  },
+  "esi:universe/types/593": {
+    "status": 200,
+    "body": {
+      "type_id": 593,
+      "name": "Tristan",
+      "published": true,
+      "group_id": 25,
+      "dogma_attributes": [
+        {
+          "attribute_id": 422,
+          "value": 1.0
+        }
+      ]
+    }
+  },
+  "esi:universe/types/602": {
+    "status": 200,
+    "body": {
+      "type_id": 602,
+      "name": "Kestrel",
+      "published": true,
+      "group_id": 25,
+      "dogma_attributes": [
+        {
+          "attribute_id": 422,
+          "value": 1.0
+        }
+      ]
+    }
+  },
+  "esi:universe/types/626": {
+    "status": 200,
+    "body": {
+      "type_id": 626,
+      "name": "Vexor",
+      "published": true,
+      "group_id": 25,
+      "dogma_attributes": [
+        {
+          "attribute_id": 422,
+          "value": 1.0
+        }
+      ]
+    }
+  },
+  "esi:universe/types/638": {
+    "status": 200,
+    "body": {
+      "type_id": 638,
+      "name": "Raven",
+      "published": true,
+      "group_id": 25,
+      "dogma_attributes": [
+        {
+          "attribute_id": 422,
+          "value": 1.0
+        }
+      ]
+    }
+  },
+  "esi:universe/types/645": {
+    "status": 200,
+    "body": {
+      "type_id": 645,
+      "name": "Dominix",
+      "published": true,
+      "group_id": 25,
+      "dogma_attributes": [
+        {
+          "attribute_id": 422,
+          "value": 1.0
+        }
+      ]
+    }
+  },
+  "esi:universe/types/12044": {
+    "status": 200,
+    "body": {
+      "type_id": 12044,
+      "name": "Enyo",
+      "published": true,
+      "group_id": 25,
+      "dogma_attributes": [
+        {
+          "attribute_id": 422,
+          "value": 2.0
+        }
+      ]
+    }
+  },
+  "esi:universe/types/17738": {
+    "status": 200,
+    "body": {
+      "type_id": 17738,
+      "name": "Machariel",
+      "published": true,
+      "group_id": 25,
+      "dogma_attributes": [
+        {
+          "attribute_id": 422,
+          "value": 1.0
+        },
+        {
+          "attribute_id": 1692,
+          "value": 4.0
+        }
+      ]
+    }
+  },
+  "esi:universe/types/24698": {
+    "status": 200,
+    "body": {
+      "type_id": 24698,
+      "name": "Drake",
+      "published": true,
+      "group_id": 25,
+      "dogma_attributes": [
+        {
+          "attribute_id": 422,
+          "value": 1.0
+        }
+      ]
+    }
+  },
+  "esi:universe/types/29984": {
+    "status": 200,
+    "body": {
+      "type_id": 29984,
+      "name": "Tengu",
+      "published": true,
+      "group_id": 25,
+      "dogma_attributes": [
+        {
+          "attribute_id": 422,
+          "value": 3.0
+        }
+      ]
+    }
+  },
+  "esi:universe/types/29990": {
+    "status": 200,
+    "body": {
+      "type_id": 29990,
+      "name": "Loki",
+      "published": true,
+      "group_id": 25,
+      "dogma_attributes": [
+        {
+          "attribute_id": 422,
+          "value": 3.0
+        }
+      ]
+    }
+  },
+  "esi:universe/types/34562": {
+    "status": 200,
+    "body": {
+      "type_id": 34562,
+      "name": "Svipul",
+      "published": true,
+      "group_id": 25,
+      "dogma_attributes": [
+        {
+          "attribute_id": 422,
+          "value": 3.0
+        }
+      ]
+    }
+  },
+  "esi:universe/types/671": {
+    "status": 200,
+    "body": {
+      "type_id": 671,
+      "name": "Erebus",
+      "published": true,
+      "group_id": 25,
+      "dogma_attributes": [
+        {
+          "attribute_id": 422,
+          "value": 1.0
+        }
+      ]
+    }
+  },
+  "esi:universe/types/11176": {
+    "status": 200,
+    "body": {
+      "type_id": 11176,
+      "name": "Crow",
+      "published": true,
+      "group_id": 25,
+      "dogma_attributes": [
+        {
+          "attribute_id": 422,
+          "value": 2.0
+        }
+      ]
+    }
+  },
+  "esi:universe/types/670": {
+    "status": 200,
+    "body": {
+      "type_id": 670,
+      "name": "Capsule",
+      "published": true,
+      "group_id": 25,
+      "dogma_attributes": []
+    }
+  },
+  "esi:characters/93813310": {
+    "status": 200,
+    "body": {
+      "name": "Victim Pilot",
+      "corporation_id": 98000001,
+      "birthday": "2015-03-24T11:37:00Z",
+      "bloodline_id": 4,
+      "race_id": 2,
+      "gender": "female",
+      "security_status": -1.2
+    }
+  },
+  "esi:characters/2112625428": {
+    "status": 200,
+    "body": {
+      "name": "Capsuleer Prime",
+      "corporation_id": 98000002,
+      "birthday": "2012-01-01T00:00:00Z",
+      "bloodline_id": 1,
+      "race_id": 1,
+      "gender": "male",
+      "security_status": 0.5
+    }
+  },
+  "esi:killmails/120000099/zkbhash99": {
+    "status": 200,
+    "body": {
+      "killmail_id": 120000099,
+      "killmail_time": {
+        "offset_minutes": -5,
+        "esi": true
+      },
+      "solar_system_id": 30002187,
+      "victim": {
+        "character_id": 93813310,
+        "corporation_id": 98000001,
+        "alliance_id": 99000002,
+        "damage_taken": 3100,
+        "ship_type_id": 11176,
+        "position": {
+          "x": 1.5,
+          "y": -2.25,
+          "z": 300000000000.0
+        },
+        "items": [
+          {
+            "flag": 27,
+            "item_type_id": 2873,
+            "singleton": 0,
+            "quantity_destroyed": 1
+          },
+          {
+            "flag": 5,
+            "item_type_id": 3020,
+            "singleton": 0,
+            "quantity_dropped": 1,
+            "items": [
+              {
+                "flag": 5,
+                "item_type_id": 2205,
+                "singleton": 0,
+                "quantity_destroyed": 3
+              }
+            ]
+          }
+        ]
+      },
+      "attackers": [
+        {
+          "character_id": 2112625428,
+          "corporation_id": 98000002,
+          "alliance_id": 99000001,
+          "damage_done": 3000,
+          "final_blow": true,
+          "security_status": -2.5,
+          "ship_type_id": 587,
+          "weapon_type_id": 3170
+        },
+        {
+          "character_id": 95465499,
+          "corporation_id": 98000003,
+          "damage_done": 100,
+          "final_blow": false,
+          "security_status": 0,
+          "ship_type_id": 24698
+        },
+        {
+          "character_id": 96000001,
+          "damage_done": 0,
+          "final_blow": false,
+          "security_status": 1.1,
+          "ship_type_id": 670
+        },
+        {
+          "damage_done": 0,
+          "faction_id": 500010,
+          "final_blow": false,
+          "security_status": 0,
+          "ship_type_id": 23913
+        }
+      ]
+    }
+  },
+  "zkillboard:api/characterID/2112625428/": {
+    "status": 200,
+    "body": [
+      {
+        "killmail_id": 120000099,
+        "zkb": {
+          "locationID": 40009081,
+          "hash": "zkbhash99",
+          "fittedValue": 6250000.375,
+          "droppedValue": 1000.0,
+          "destroyedValue": 12499000.75,
+          "totalValue": 12500000.75,
+          "points": 7,
+          "npc": false,
+          "solo": false,
+          "awox": false,
+          "labels": [
+            "pvp",
+            "loc:lowsec"
+          ]
+        }
+      },
+      {
+        "killmail_id": 120000001,
+        "zkb": {
+          "locationID": 40009081,
+          "hash": "hash120000001",
+          "fittedValue": 500000.0,
+          "droppedValue": 1000.0,
+          "destroyedValue": 999000.0,
+          "totalValue": 1000000.0,
+          "points": 7,
+          "npc": false,
+          "solo": true,
+          "awox": false,
+          "labels": [
+            "pvp",
+            "loc:lowsec"
+          ]
+        }
+      },
+      {
+        "killmail_id": 120000098,
+        "zkb": {
+          "locationID": 40009081,
+          "hash": "zkbhash98",
+          "fittedValue": 2200000.0,
+          "droppedValue": 1000.0,
+          "destroyedValue": 4399000.0,
+          "totalValue": 4400000.0,
+          "points": 7,
+          "npc": false,
+          "solo": false,
+          "awox": false,
+          "labels": [
+            "pvp",
+            "loc:lowsec"
+          ]
+        }
+      }
+    ]
+  },
+  "zkillboard:api/characterID/93813310/": {
+    "status": 200,
+    "body": []
+  },
+  "zkillboard:api/characterID/95465499/": {
+    "status": 200,
+    "body": []
+  }
+}

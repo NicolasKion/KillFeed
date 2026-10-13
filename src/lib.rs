@@ -1,5 +1,13 @@
 pub mod clock;
 pub mod config;
 pub mod db;
+pub mod eve;
 pub mod html;
+pub mod jobs;
+pub mod killmails;
+pub mod listener;
+pub mod options;
+pub mod purge;
+pub mod scheduler;
 pub mod server;
+pub mod ship_types;
