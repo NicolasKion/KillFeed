@@ -6,7 +6,9 @@ name: Release
 # CI's warm-cache job fills.
 on:
   push:
-    branches: [main]
+    # `rust` only until the rewrite is merged into main, so the images
+    # exist before the cutover. The trigger goes away with the merge.
+    branches: [main, rust]
     paths:
       - "src/**"
       - "migrations/**"
