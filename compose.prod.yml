@@ -1,0 +1,95 @@
+# Production, deployed by Coolify (Docker Compose build pack, this file)
+# from the images .github/workflows/release.yml pushes to GHCR on every
+# merge to main.
+#
+# Only the proxy gets a domain: in Coolify set the "Domains" of
+# killfeed-proxy to https://killfeed.killmail.space and leave the api and
+# the frontend without one. Traefik terminates TLS and hands plain HTTP to
+# the proxy on :80, which routes to the api and the frontend
+# (deploy/Caddyfile).
+#
+# The services carry the app's prefix because the api also joins the
+# server's external `coolify` network to reach the shared Postgres
+# (DATABASE_URL), and every app there has an api: a plain `api` would not
+# resolve to this one. The proxy and the frontend stay off that network.
+# The api runs its migrations on startup, and the firehose listener, the
+# job workers and the nightly purge run inside it.
+#
+# Coolify fills in the ${VAR}s from the resource's environment variables:
+# DATABASE_URL is required, the rest have the app's defaults. The
+# listener stays off until LISTENER_ENABLED=true (never two listeners at
+# once, anywhere).
+
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+services:
+  killfeed-api:
+    image: ghcr.io/nicolaskion/killfeed-api:latest
+    pull_policy: always
+    environment:
+      DATABASE_URL: ${DATABASE_URL:?}
+      BIND_ADDR: 0.0.0.0:3000
+      APP_NAME: ${APP_NAME:-}
+      RUST_LOG: ${RUST_LOG:-info}
+      EVE_APIS_ENABLED: "true"
+      LISTENER_ENABLED: ${LISTENER_ENABLED:-false}
+      SCHEDULER_ENABLED: ${SCHEDULER_ENABLED:-true}
+      JOB_WORKERS: ${JOB_WORKERS:-}
+      KILLMAIL_MAX_VISIBLE: ${KILLMAIL_MAX_VISIBLE:-}
+      KILLMAIL_MAX_AGE_HOURS: ${KILLMAIL_MAX_AGE_HOURS:-}
+      KILLFEED_DISCORD_INVITE_URL: ${KILLFEED_DISCORD_INVITE_URL:-https://discord.gg/d2NZ5DRDQe}
+      HTTP_USER_AGENT: ${HTTP_USER_AGENT:-}
+    # The listener finishes its current killmail and stores its sequence.
+    stop_grace_period: 15s
+    # The image has no curl or wget; bash talks HTTP to /up itself.
+    healthcheck:
+      test:
+        - CMD
+        - bash
+        - -c
+        - "exec 3<>/dev/tcp/127.0.0.1/3000 && printf 'GET /up HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n' >&3 && head -n 1 <&3 | grep -q ' 200 '"
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    networks:
+      - default
+      - coolify
+    restart: unless-stopped
+    logging: *logging
+
+  killfeed-frontend:
+    image: ghcr.io/nicolaskion/killfeed-frontend:latest
+    pull_policy: always
+    environment:
+      AXUM_URL: http://killfeed-api:3000
+      ORIGIN: ${APP_URL:-https://killfeed.killmail.space}
+      TZ: UTC
+      # The page origin (og:url, og:image) from the scheme and host the
+      # proxy saw (SvelteKit 3 does not read ORIGIN).
+      PROTOCOL_HEADER: x-forwarded-proto
+      HOST_HEADER: x-forwarded-host
+    depends_on:
+      - killfeed-api
+    restart: unless-stopped
+    logging: *logging
+
+  killfeed-proxy:
+    image: ghcr.io/nicolaskion/killfeed-proxy:latest
+    pull_policy: always
+    environment:
+      API_HOST: killfeed-api
+      FRONTEND_HOST: killfeed-frontend
+    depends_on:
+      - killfeed-api
+      - killfeed-frontend
+    restart: unless-stopped
+    logging: *logging
+
+networks:
+  coolify:
+    external: true

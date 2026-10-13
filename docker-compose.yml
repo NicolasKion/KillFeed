@@ -1,0 +1,148 @@
+# The whole stack on http://localhost:5316:
+#   docker compose up --build
+# (the demo-seed service seeds sample characters, killmails and the demo
+# ships' meta groups, so the overlays show something)
+# The local preview on https://killfeed.test (portal):
+#   ORIGIN=https://killfeed.test docker compose up --build -d
+# Hot-reloading frontend instead of the built one:
+#   docker compose --profile dev up -d postgres api frontend-dev
+# Postgres alone, for `cargo run` + `npm run dev` on the host:
+#   docker compose up -d postgres
+#
+# The stack never calls ESI, zKillboard or R2Z2 unless asked to:
+# EVE_APIS_ENABLED=true turns the outgoing calls on, LISTENER_ENABLED=true
+# the firehose listener as well.
+#
+# Fixed ports, so the stack runs next to other projects: Postgres 5446,
+# the composed stack 5316.
+
+name: killfeed
+
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+services:
+  postgres:
+    image: postgres:18
+    container_name: killfeed-postgres
+    environment:
+      POSTGRES_USER: killfeed
+      POSTGRES_PASSWORD: killfeed
+      POSTGRES_DB: killfeed
+    ports:
+      - "127.0.0.1:5446:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U killfeed"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+    logging: *logging
+
+  api:
+    build: .
+    image: killfeed-api
+    container_name: killfeed-api
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      DATABASE_URL: postgres://killfeed:killfeed@postgres:5432/killfeed
+      BIND_ADDR: 0.0.0.0:3000
+      RUST_LOG: ${RUST_LOG:-info}
+      EVE_APIS_ENABLED: ${EVE_APIS_ENABLED:-false}
+      LISTENER_ENABLED: ${LISTENER_ENABLED:-false}
+      KILLFEED_DISCORD_INVITE_URL: ${KILLFEED_DISCORD_INVITE_URL:-https://discord.gg/d2NZ5DRDQe}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    develop:
+      watch:
+        - { action: rebuild, path: ./src }
+        - { action: rebuild, path: ./migrations }
+        - { action: rebuild, path: ./Cargo.toml }
+    logging: *logging
+
+  # One-shot: sample characters and killmails for the local preview, and
+  # the meta groups of the demo ships (the stack does not ask ESI). Safe
+  # to repeat; it migrates first and replaces the sample rows.
+  demo-seed:
+    build: .
+    # The api's image, so `up --no-build` runs it without a build of its
+    # own.
+    image: killfeed-api
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      DATABASE_URL: postgres://killfeed:killfeed@postgres:5432/killfeed
+    command: seed_demo
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+    logging: *logging
+
+  frontend:
+    build: ./frontend
+    image: killfeed-frontend
+    container_name: killfeed-frontend
+    environment:
+      AXUM_URL: http://api:3000
+      ORIGIN: ${ORIGIN:-http://localhost:5316}
+      TZ: UTC
+      # The page origin (og:url, og:image) from the scheme and host Caddy
+      # saw (SvelteKit 3 does not read ORIGIN).
+      PROTOCOL_HEADER: x-forwarded-proto
+      HOST_HEADER: x-forwarded-host
+    depends_on:
+      - api
+    restart: unless-stopped
+    develop:
+      watch:
+        - action: rebuild
+          path: ./frontend
+          ignore: [node_modules/, .svelte-kit/, build/]
+    logging: *logging
+
+  # The production proxy's Caddyfile (deploy/Dockerfile), mounted so an
+  # edit only needs a restart.
+  proxy:
+    image: caddy:2.11.4
+    container_name: killfeed-proxy
+    ports:
+      - "127.0.0.1:5316:80"
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+    depends_on:
+      - api
+      - frontend
+    restart: unless-stopped
+    logging: *logging
+
+  frontend-dev:
+    image: node:26
+    container_name: killfeed-frontend-dev
+    profiles: ["dev"]
+    working_dir: /app
+    command: sh -c "npm ci && npx vite dev --host 0.0.0.0 --port 5316"
+    environment:
+      AXUM_URL: http://api:3000
+      VITE_POLL_WATCH: "1"
+    ports:
+      - "127.0.0.1:5316:5316"
+    volumes:
+      - ./frontend:/app
+      - frontend-node-modules:/app/node_modules
+    depends_on:
+      - api
+    logging: *logging
+
+volumes:
+  postgres-data:
+  frontend-node-modules:

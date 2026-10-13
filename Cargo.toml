@@ -1,0 +1,63 @@
+[package]
+name = "killfeed"
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+description = "killfeed.killmail.space: a live EVE Online killfeed overlay for OBS, fed by zKillboard's R2Z2 firehose"
+default-run = "killfeed"
+
+[dependencies]
+axum = "0.8"
+dotenvy = "0.15"
+# ESI, zKillboard and R2Z2, rustls like sqlx.
+reqwest = { version = "0.13", default-features = false, features = [
+    "rustls",
+    "json",
+    "gzip",
+] }
+serde = { version = "1", features = ["derive"] }
+# float_roundtrip: killmail positions and ISK values parse to the exact
+# f64 they were written as, so the stored `data` matches ESI's.
+serde_json = { version = "1", features = ["float_roundtrip"] }
+sqlx = { version = "0.9", features = [
+    "runtime-tokio",
+    "tls-rustls",
+    "postgres",
+    "migrate",
+    "time",
+    "json",
+] }
+# Timestamps; every time window, the downtime and the schedule are UTC.
+time = { version = "0.3", features = ["formatting", "parsing", "macros", "serde"] }
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "sync", "time", "signal", "net"] }
+# The shutdown signal the listener, the workers and the scheduler share.
+tokio-util = "0.7"
+tower = "0.5"
+# Trailing slashes are ignored, so `/up/` is `/up`.
+tower-http = { version = "0.7", features = ["normalize-path"] }
+tracing = "0.1.44"
+tracing-subscriber = { version = "0.3.23", features = ["env-filter"] }
+
+[dev-dependencies]
+http-body-util = "0.1"
+tower = { version = "0.5", features = ["util"] }
+
+[[bin]]
+name = "killfeed"
+path = "src/main.rs"
+
+[[bin]]
+name = "migrate"
+path = "src/bin/migrate.rs"
+
+[[bin]]
+name = "purge_old_killmails"
+path = "src/bin/purge_old_killmails.rs"
+
+[[bin]]
+name = "seed_demo"
+path = "src/bin/seed_demo.rs"
+
+# Handlers return `Result<_, Response>`, as in MutaMarket.
+[lints.clippy]
+result_large_err = "allow"

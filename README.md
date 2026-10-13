@@ -1,94 +1,125 @@
 # KillFeed
 
-[![CI](https://github.com/TimKunze96/KillFeed/actions/workflows/ci.yml/badge.svg)](https://github.com/TimKunze96/KillFeed/actions/workflows/ci.yml)
+[![CI](https://github.com/NicolasKion/KillFeed/actions/workflows/ci.yml/badge.svg)](https://github.com/NicolasKion/KillFeed/actions/workflows/ci.yml)
+[![Release](https://github.com/NicolasKion/KillFeed/actions/workflows/release.yml/badge.svg)](https://github.com/NicolasKion/KillFeed/actions/workflows/release.yml)
+[![Website](https://img.shields.io/website?url=https%3A%2F%2Fkillfeed.killmail.space&label=killfeed.killmail.space)](https://killfeed.killmail.space)
+[![Rust](https://img.shields.io/badge/Rust-Axum-DEA584?logo=rust&logoColor=white)](https://github.com/tokio-rs/axum)
+[![SvelteKit](https://img.shields.io/badge/SvelteKit-Svelte%205-FF3E00?logo=svelte&logoColor=white)](https://svelte.dev/docs/kit)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-18-4169E1?logo=postgresql&logoColor=white)](https://www.postgresql.org)
 
-A real-time **EVE Online killmail overlay for streamers**. KillFeed tracks a character's kills and losses live and renders them as a compact, OBS-ready browser-source overlay — killmail cards with ship renders and ISK values, plus an optional summary panel with ISK destroyed, ISK lost, and efficiency.
+A live killfeed overlay for EVE Online streamers: paste one URL into an
+OBS browser source and your kills and losses show up on stream.
 
-Killmails are streamed from the [zKillboard R2Z2 firehose](https://github.com/zKillboard/RedisQ) and enriched with data from [ESI](https://esi.evetech.net/), EVE's official API.
+## Features
 
-## How it works
-
-1. A long-running listener (`app:listen-for-kills`) consumes the R2Z2 firehose and dispatches a job for every killmail involving a tracked character.
-2. Jobs fetch the full killmail from ESI, compute its value, and store it with all character involvements.
-3. The overlay page (`/{characterId}`) polls every 10 seconds and renders the latest killmails inside the configured time window.
-
-Setup happens on the home page: enter a character ID, tweak the options, and copy the generated overlay URL into an OBS browser source.
+- A setup page that builds the overlay URL for a character, with a live
+  preview and a simulated feed to try the options on
+- The overlay: killmail cards with ship renders, ISK values, solo or the
+  number of pilots, meta group badges (Tech II, Tech III, faction,
+  storyline, officer), a `+N` tile for what does not fit, and an optional
+  summary of ISK destroyed, lost and efficiency
+- Options in the URL: cards shown, time window, summary panel, badges
+- New killmails within seconds from zKillboard's R2Z2 firehose, for every
+  character with an overlay open, plus a backfill of each character's
+  latest killmails from zKillboard on every overlay refresh
+- A full-page demo with simulated killmails
+- Killmails older than a week are purged every night
 
 ## Stack
 
-- [Laravel 13](https://laravel.com) on PHP 8.4, with [Horizon](https://laravel.com/docs/horizon) + Redis for queues
-- [Inertia v3](https://inertiajs.com) with [Vue 3](https://vuejs.org), TypeScript, and SSR
-- [Tailwind CSS 4](https://tailwindcss.com) and [Vite 8](https://vite.dev)
-- [Wayfinder](https://github.com/laravel/wayfinder) for type-safe routes in the frontend
+- API: Rust, [Axum](https://github.com/tokio-rs/axum) and
+  [sqlx](https://github.com/launchbadge/sqlx) on Postgres. The firehose
+  listener, the job workers and the nightly purge run inside the API.
+- Frontend: [SvelteKit](https://svelte.dev/docs/kit) (SSR, adapter-node),
+  Svelte 5 and Tailwind CSS 4
+- Data from [ESI](https://esi.evetech.net), [zKillboard](https://zkillboard.com)
+  and its R2Z2 firehose; images from images.evetech.net
 
-## Development
+One origin serves both: Caddy (or the Vite dev proxy) sends `/api/*`,
+`/characters/*` and `/up` to Axum, and page loads to SvelteKit.
+`frontend/proxy-paths.ts` and `deploy/Caddyfile` hold that list.
 
-Requirements: PHP 8.4 (with `pcntl`), Composer, Node 22+, MySQL, Redis.
+## Getting started
+
+The whole stack (Postgres, API, SvelteKit, Caddy) on
+http://localhost:5316:
 
 ```bash
-composer install
-npm install
-
-cp .env.example .env
-php artisan key:generate
-php artisan migrate
-
-# In separate terminals:
-php artisan serve          # app server
-npm run dev                # Vite dev server
-php artisan horizon        # queue worker
-php artisan app:listen-for-kills   # killmail firehose listener
+docker compose up --build -d
 ```
 
-### Console commands
+The local stack never calls ESI, zKillboard or R2Z2. The `demo-seed`
+service (safe to repeat) stores a sample character with a week of
+killmails, so http://localhost:5316/2112625428?summary=1 shows an
+overlay. To work against the real services:
 
-| Command                        | Purpose                                                      |
-| ------------------------------ | ------------------------------------------------------------ |
-| `app:listen-for-kills`         | Listen to the R2Z2 firehose for new killmails                |
-| `app:stop-listening`           | Signal the listener to shut down gracefully                  |
-| `app:get-killmail {id} {hash}` | Fetch and process a single killmail manually                 |
-| `app:purge-old-killmails`      | Purge killmails older than the retention window (runs daily) |
+```bash
+EVE_APIS_ENABLED=true docker compose up -d api              # ESI and zKillboard
+EVE_APIS_ENABLED=true LISTENER_ENABLED=true docker compose up -d api   # and the firehose
+```
 
-### Configuration
+Only one firehose listener should run at a time anywhere, so leave
+`LISTENER_ENABLED` off unless you need it.
 
-Killfeed-specific options live in `config/killfeed.php`:
+Or natively, with only Postgres in docker:
 
-| Env variable                  | Default    | Purpose                                     |
-| ----------------------------- | ---------- | ------------------------------------------- |
-| `KILLMAIL_MAX_VISIBLE`        | `50`       | Maximum killmail cards shown in the overlay |
-| `KILLMAIL_MAX_AGE_HOURS`      | `168`      | Maximum age of displayed killmails (hours)  |
-| `KILLFEED_DISCORD_INVITE_URL` | –          | Discord invite shown on the setup page      |
-| `R2Z2_BASE_URL`               | zKillboard | Base URL of the R2Z2 firehose               |
+```bash
+docker compose up -d postgres     # Postgres on 127.0.0.1:5446
+cargo run                         # API on 127.0.0.1:3000
+cd frontend && npm install && npm run dev
+```
+
+Configuration lives in `.env` (see `.env.example`); everything has a
+working local default.
 
 ## Testing
 
-The test suite uses [Pest 4](https://pestphp.com), including real-browser tests via Playwright.
-
 ```bash
-# One-time setup for browser tests
-npx playwright install chromium
-
-# Browser tests run against the built frontend
-npm run build
-
-php artisan test                      # everything
-php artisan test --testsuite=Unit    # unit tests only
-php artisan test --testsuite=Feature # feature tests only
-php artisan test --testsuite=Browser # browser tests only
+docker compose up -d postgres
+cargo test
+cd frontend && npm run check && npm run lint && npm test
+docker compose up --build -d && cd frontend && npm run test:e2e
 ```
 
-## Code quality
+The Rust suites drive the real router on their own `killfeed_test`
+database with a fixed clock; ESI, zKillboard and R2Z2 are a local mock
+server. They pin every page's props, the firehose listener, the job
+queue and the storage of killmails. The vitest suites cover the overlay's
+logic and render it in a headless Chromium, and Playwright runs against
+the composed stack on port 5316.
 
-| Check           | Command                                        |
-| --------------- | ---------------------------------------------- |
-| PHP code style  | `composer lint` (fix: `composer lint:fix`)     |
-| Static analysis | `composer analyse`                             |
-| Refactoring     | `composer refactor`                            |
-| JS/Vue lint     | `npm run lint` (fix: `npm run lint:fix`)       |
-| Formatting      | `npm run format:check` (fix: `npm run format`) |
-| Type check      | `npm run typecheck`                            |
+## Deployment
 
-All of these run in CI on every push and pull request (see `.github/workflows/ci.yml`).
+Coolify runs `compose.prod.yml` on the server: `killfeed-api`,
+`killfeed-frontend` and `killfeed-proxy`, from images in GHCR.
+
+1. A merge to main runs `.github/workflows/release.yml` (when it touches
+   the api, the frontend, the proxy or the compose file).
+2. It builds the three images and pushes them to
+   `ghcr.io/nicolaskion/killfeed-*`, tagged `latest` and with the commit.
+3. It calls Coolify's deploy webhook (the `COOLIFY_WEBHOOK` and
+   `COOLIFY_TOKEN` secrets), and Coolify pulls the images and restarts
+   the stack.
+
+Only the proxy has a domain (https://killfeed.killmail.space); Traefik
+terminates TLS in front of it. `DATABASE_URL` (the shared Postgres on the
+`coolify` network) and `LISTENER_ENABLED=true` are Coolify environment
+variables. The API runs its migrations on startup (`migrate` applies them
+on its own and exits) and stops the listener cleanly on shutdown, so it
+resumes where it left off. `purge_old_killmails` runs the nightly purge
+by hand.
+
+## Layout
+
+```
+src/                 the API: router, listener, jobs, scheduler, ESI and zKillboard clients
+src/bin/             migrate, purge_old_killmails, seed_demo
+migrations/          the Postgres schema
+tests/integration/   the Rust suites, one binary
+tests/fixtures/      the dataset and EVE answers the suites use
+frontend/            the SvelteKit app and its Playwright suite (e2e/)
+deploy/              the proxy: Caddyfile and image, local and production
+```
 
 ## License
 
