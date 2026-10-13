@@ -89,6 +89,10 @@ async fn starts_at_the_current_sequence_without_a_stored_one() {
         stored_sequence(&app).await == Some(100)
     })
     .await;
+    eventually("sequence 101 asked for", || async {
+        app.eve.paths_under("/r2z2").len() >= 3
+    })
+    .await;
     running.stop().await;
 
     assert_eq!(
