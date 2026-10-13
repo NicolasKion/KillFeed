@@ -102,7 +102,8 @@ async fn reload_inertia_requests(
         .and_then(|value| value.to_str().ok())
         .unwrap_or_else(|| state.config.app_url.split("://").next().unwrap_or("https"));
     let host = headers
-        .get(header::HOST)
+        .get("x-forwarded-host")
+        .or_else(|| headers.get(header::HOST))
         .and_then(|value| value.to_str().ok())
         .unwrap_or_else(|| state.config.app_url.split("://").nth(1).unwrap_or_default());
     let path = request

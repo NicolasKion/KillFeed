@@ -42,9 +42,10 @@ services:
       AXUM_URL: http://killfeed-api:3000
       ORIGIN: https://killfeed.killmail.space
       TZ: UTC
-      # The page origin (og:url, og:image) from the scheme Caddy saw and
-      # the Host it passed on.
+      # The page origin (og:url, og:image) from the scheme and host Caddy
+      # saw (SvelteKit 3 does not read ORIGIN).
       PROTOCOL_HEADER: x-forwarded-proto
+      HOST_HEADER: x-forwarded-host
     depends_on:
       - api
     networks:
