@@ -24,6 +24,7 @@ use sqlx::PgPool;
 use time::{OffsetDateTime, Time};
 use tokio_util::sync::CancellationToken;
 
+use crate::eve::EveError;
 use crate::killmails::dto::{EsiKillmail, ZkillKillmail};
 use crate::killmails::store;
 use crate::server::AppState;
@@ -131,6 +132,11 @@ async fn fetch_killmail(
                 return Ok(EsiKillmail::from_value(&answer.json()?)?);
             }
             Ok(answer) => last = format!("ESI answered {} for {path}", answer.status),
+            // Switched off or holding back for the error limit: trying
+            // again changes nothing.
+            Err(error @ (EveError::Disabled | EveError::ErrorLimit)) => {
+                return Err(format!("{error} for {path}").into());
+            }
             Err(error) => last = format!("{error} for {path}"),
         }
         if attempt < ESI_KILLMAIL_TRIES {

@@ -103,6 +103,7 @@ async fn the_meta_group_is_asked_again_after_30_days() {
 }
 
 /// FIXES.md: a failed lookup of the demo ships is not kept for a month.
+/// While ESI fails, a view asks once (three tries), not for each ship.
 #[tokio::test]
 async fn a_failed_demo_ship_lookup_is_retried() {
     let app = TestApp::new().await;
@@ -110,8 +111,12 @@ async fn a_failed_demo_ship_lookup_is_retried() {
     let ships = demo_ships(&app.state).await;
     assert!(ships.iter().all(|ship| ship.meta_group_id == 1));
     assert_eq!(ships.len(), 13);
+    assert_eq!(app.eve.received().len(), 3);
 
     app.eve.recover();
+    for type_id in killfeed::ship_types::DEMO_SHIP_TYPE_IDS {
+        app.eve.esi_type(type_id, None, Some(1));
+    }
     app.eve.esi_type(17738, Some(4), Some(1));
     let ships = demo_ships(&app.state).await;
 
