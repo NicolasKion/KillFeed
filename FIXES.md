@@ -217,5 +217,5 @@ Test: `scheduler::housekeeping_drops_expired_listings_and_old_failed_jobs`.
   every OBS source every 10 seconds; kept for parity, the overlay reads
   only a few fields.
 - The old nginx config redirected any `*.killfeed.killmail.space` to the
-  apex over http. The Caddyfile serves only the apex; a wildcard needs a
-  DNS challenge certificate on the shared Caddy.
+  apex over http. The proxy serves only the apex (and redirects www); a
+  wildcard would need a DNS challenge certificate in Traefik.

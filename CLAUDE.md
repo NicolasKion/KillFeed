@@ -59,9 +59,9 @@ test that pins it. Any other difference from Laravel is a bug here.
 
 - `src/server/` the router and the layers; `src/listener.rs` the R2Z2
   listener; `src/jobs.rs` the queue; `src/scheduler.rs` the nightly
-  purge; `migrations/` the schema; `deploy/` the Caddyfiles;
-  `frontend/proxy-paths.ts` the routing contract, mirrored by
-  `deploy/Caddyfile.dev` and `deploy/Caddyfile`.
+  purge; `migrations/` the schema; `deploy/` the proxy (Caddyfile and
+  image, local and production); `frontend/proxy-paths.ts` the routing
+  contract, mirrored by `deploy/Caddyfile`.
 - Development: `docker compose up -d postgres`, `cargo run` (API on
   `BIND_ADDR`, default 127.0.0.1:3000, see `.env.example`) and
   `npm run dev` in `frontend/`.
@@ -78,3 +78,7 @@ test that pins it. Any other difference from Laravel is a bug here.
   docker compose up --build -d`.
 - Frontend: pages load their props from `/api/pages/<path>`
   (`#lib/server/api.ts`); the overlay is `#lib/components/killfeed-overlay.svelte`.
+- Deploy: a merge to main builds the api, frontend and proxy images in
+  GitHub Actions (`.github/workflows/release.yml`), pushes them to
+  `ghcr.io/nicolaskion/killfeed-*` and has Coolify redeploy
+  `compose.prod.yml`.

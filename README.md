@@ -36,8 +36,7 @@ OBS browser source and your kills and losses show up on stream.
 
 One origin serves both: Caddy (or the Vite dev proxy) sends `/api/*`,
 `/characters/*` and `/up` to Axum, and page loads to SvelteKit.
-`frontend/proxy-paths.ts` and the two Caddyfiles in `deploy/` hold that
-list.
+`frontend/proxy-paths.ts` and `deploy/Caddyfile` hold that list.
 
 ## Getting started
 
@@ -91,24 +90,17 @@ tests over the total for all three.
 
 ## Deployment
 
-Production runs on a shared server whose Caddy and Postgres serve several
-sites. `compose.prod.yml` starts only the API and the frontend, from
-images tagged with the commit, on the server's external `web` network:
-
-```bash
-docker build -t killfeed-api:$TAG .
-docker build -t killfeed-frontend:$TAG frontend
-# in /opt/killfeed, with IMAGE_TAG=$TAG and the production values in .env
-docker compose -f compose.prod.yml up -d
-```
-
-`DATABASE_URL`, `KILLFEED_DISCORD_INVITE_URL` and `LISTENER_ENABLED=true`
-go into `.env` next to the compose file. The API runs its migrations on
-startup (`migrate` applies them on its own and exits) and stops the
-listener cleanly on `docker stop`, so it resumes where it left off.
-`purge_old_killmails` runs the nightly purge by hand. `deploy/Caddyfile`
-is the production site block; the server's Caddy keeps a copy of it, so
-change both.
+Coolify deploys `compose.prod.yml` on the server. A merge to main runs
+`.github/workflows/release.yml`, which builds the api, frontend and proxy
+images, pushes them to `ghcr.io/nicolaskion/killfeed-*` (`latest` and the
+commit) and calls Coolify's deploy webhook, so Coolify pulls and restarts
+them. Only the proxy has a domain (https://killfeed.killmail.space);
+Traefik terminates TLS in front of it. `DATABASE_URL` (the shared
+Postgres on the `coolify` network) and `LISTENER_ENABLED=true` are
+Coolify environment variables. The API runs its migrations on startup
+(`migrate` applies them on its own and exits) and stops the listener
+cleanly on shutdown, so it resumes where it left off.
+`purge_old_killmails` runs the nightly purge by hand.
 
 ## Layout
 
@@ -119,7 +111,7 @@ migrations/          the Postgres schema
 tests/integration/   the Rust suites, one binary
 tests/fixtures/      the dataset and EVE answers the suites use
 frontend/            the SvelteKit app and its Playwright suite (e2e/)
-deploy/              Caddyfiles for the local stack and production
+deploy/              the proxy: Caddyfile and image, local and production
 ```
 
 ## License

@@ -1,11 +1,26 @@
-# The production site block for the shared Caddy. Same routing as
-# Caddyfile.dev: keep the path list in sync with frontend/proxy-paths.ts.
-# Backend paths go to the api, and so does every request carrying
-# `X-Inertia`: OBS overlays left open on the Laravel site keep polling
-# with it, and the api answers 409 with `X-Inertia-Location`, which makes
-# them reload into the new pages.
+# The shared origin, in production (the proxy image, deploy/Dockerfile,
+# behind Coolify's Traefik, which terminates TLS) and in the local stack
+# (docker-compose.yml, published on :5316). Backend paths go to the api,
+# page GETs to the SvelteKit node server. Keep the path list in sync with
+# frontend/proxy-paths.ts.
+#
+# Requests carrying `X-Inertia` go to the api as well: OBS overlays left
+# open on the Laravel site keep polling with it, and the api answers 409
+# with `X-Inertia-Location`, which makes them reload into the new pages.
+{
+	# Traefik in front (or the local preview proxy): keep its
+	# X-Forwarded-* headers, so the api sees the client's address and the
+	# pages know they are on https.
+	servers {
+		trusted_proxies static private_ranges
+	}
+}
 
-killfeed.killmail.space {
+:80 {
+	# www.<domain>, when Coolify routes it here too, redirects to the apex.
+	@www header_regexp www Host ^www\.(.+)$
+	redir @www https://{re.www.1}{uri} permanent
+
 	encode zstd gzip
 	# The headers the Forge nginx config sent.
 	header {
@@ -17,12 +32,12 @@ killfeed.killmail.space {
 	@axum {
 		path /api/* /up /characters/*
 	}
-	reverse_proxy @axum killfeed-api:3000
+	reverse_proxy @axum {$API_HOST:api}:3000
 
 	@inertia {
 		header X-Inertia *
 	}
-	reverse_proxy @inertia killfeed-api:3000
+	reverse_proxy @inertia {$API_HOST:api}:3000
 
-	reverse_proxy killfeed-frontend:3000
+	reverse_proxy {$FRONTEND_HOST:frontend}:3000
 }
