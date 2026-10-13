@@ -4,7 +4,7 @@
 //! killmails as Laravel did (`data` with every key, the involvements, the
 //! characters) and keep the one ESI never answered as failed.
 
-use crate::common::golden::{self, job_kind, read_json, requests, written_now};
+use crate::common::golden::{self, involvements_by_id, job_kind, read_json, requests, written_now};
 use crate::common::{TestApp, assert_json_eq};
 
 #[tokio::test]
@@ -37,8 +37,8 @@ async fn the_overlay_backfill_stores_killmails_like_laravel() {
 
     assert_eq!(requests(&recorded["requests"]), app.eve.paths());
     assert_json_eq(
-        &written_now(&recorded["killmails"], now),
-        &written_now(&app.killmail_rows().await, now),
+        &involvements_by_id(&written_now(&recorded["killmails"], now)),
+        &involvements_by_id(&written_now(&app.killmail_rows().await, now)),
     );
     assert_json_eq(
         &written_now(&recorded["characters"], now),

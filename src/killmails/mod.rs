@@ -1,4 +1,6 @@
-//! Killmails: their shape (ESI, zKillboard, R2Z2), how they are stored
-//! and how an overlay reads them.
+//! Killmails: their shapes (ESI, zKillboard, R2Z2), how they are stored
+//! and what an overlay reads.
 
 pub mod dto;
+pub mod feed;
+pub mod store;

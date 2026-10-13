@@ -16,6 +16,7 @@ mod common;
 mod character_page;
 mod character_preview;
 mod demo;
+mod demo_seed;
 mod esi;
 mod example;
 mod golden_http;

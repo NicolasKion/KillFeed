@@ -16,7 +16,11 @@
 //!   `X-Compatibility-Date`) instead of `/latest/characters/1/` (FIXES.md,
 //!   deliberate changes); the outgoing requests compare after mapping.
 //! - N5: the health page's render time.
-//! - N6: rows read back with SQL (not through the api) write their
+//! - N6: the involvements of a killmail in id order. Laravel loaded them
+//!   without an order, and MySQL answered in whichever index order its
+//!   plan picked (by character id on some pages, by id on others); the
+//!   api orders them by id.
+//! - N7: rows read back with SQL (not through the api) write their
 //!   numbers as PHP's json_encode did: a float without a fraction is an
 //!   integer.
 
@@ -128,7 +132,7 @@ impl TestApp {
     }
 
     /// Every killmail with its involvements, as Eloquent serialized
-    /// `Killmail::with('killmailInvolvements')`, by id (N6).
+    /// `Killmail::with('killmailInvolvements')`, by id (N7).
     pub async fn killmail_rows(&self) -> Value {
         let rows: Option<Value> = sqlx::query_scalar(
             "select coalesce(json_agg(json_build_object(
@@ -166,7 +170,7 @@ pub async fn create_ts_function(pool: &sqlx::PgPool) {
     .expect("ts() creates");
 }
 
-/// N6: integral floats as integers, as PHP's json_encode writes them.
+/// N7: integral floats as integers, as PHP's json_encode writes them.
 pub fn php_numbers(value: &Value) -> Value {
     match value {
         Value::Number(number) => match number.as_f64() {
@@ -186,6 +190,28 @@ pub fn php_numbers(value: &Value) -> Value {
                 .collect(),
         ),
         Value::Array(items) => Value::Array(items.iter().map(php_numbers).collect()),
+        other => other.clone(),
+    }
+}
+
+/// N6: every `killmail_involvements` list in id order.
+pub fn involvements_by_id(value: &Value) -> Value {
+    match value {
+        Value::Object(fields) => Value::Object(
+            fields
+                .iter()
+                .map(|(key, value)| {
+                    let mut value = involvements_by_id(value);
+                    if key == "killmail_involvements"
+                        && let Value::Array(items) = &mut value
+                    {
+                        items.sort_by_key(|item| item["id"].as_i64());
+                    }
+                    (key.clone(), value)
+                })
+                .collect(),
+        ),
+        Value::Array(items) => Value::Array(items.iter().map(involvements_by_id).collect()),
         other => other.clone(),
     }
 }

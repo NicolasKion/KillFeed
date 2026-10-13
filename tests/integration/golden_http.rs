@@ -4,7 +4,6 @@
 //! Inertia client.
 
 use axum::http::StatusCode;
-use serde_json::Value;
 
 use crate::common::golden::{self, read_json, read_text, requests, written_now};
 use crate::common::{TestApp, assert_json_eq};
@@ -135,13 +134,12 @@ async fn inertia_stale() {
         recorded["x_inertia_location"].as_str()
     );
     assert!(app.eve.received().is_empty());
-    let listening: Option<Value> = sqlx::query_scalar(
-        "select to_jsonb(listening_since) from characters where id = 2112625428",
-    )
-    .fetch_one(&app.pool)
-    .await
-    .expect("reads");
-    assert_eq!(listening, Some(Value::Null));
+    let untouched: bool =
+        sqlx::query_scalar("select listening_since is null from characters where id = 2112625428")
+            .fetch_one(&app.pool)
+            .await
+            .expect("reads");
+    assert!(untouched, "the page did not run");
 }
 
 /// The api paths answer the same 409 (Caddy sends every request with the

@@ -6,6 +6,7 @@ use axum::body::Body;
 use axum::http::{Method, StatusCode};
 
 use crate::common::golden::read_json;
+use crate::common::mock_eve::Reply;
 use crate::common::{HOST, TestApp, header_map};
 
 /// The api path a Laravel route is served at: the pages' props come from
@@ -29,6 +30,10 @@ fn dropped(uri: &str) -> bool {
 #[tokio::test]
 async fn every_laravel_route_is_routed() {
     let app = TestApp::new().await;
+    app.eve.on(
+        "/esi/characters/2112625428",
+        Reply::json(serde_json::json!({ "name": "Capsuleer Prime" })),
+    );
     let routes = read_json("routes.json");
     for route in routes.as_array().expect("routes") {
         let uri = route["uri"].as_str().expect("a uri");

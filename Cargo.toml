@@ -50,6 +50,14 @@ path = "src/main.rs"
 name = "migrate"
 path = "src/bin/migrate.rs"
 
+[[bin]]
+name = "purge_old_killmails"
+path = "src/bin/purge_old_killmails.rs"
+
+[[bin]]
+name = "seed_demo"
+path = "src/bin/seed_demo.rs"
+
 # Handlers return `Result<_, Response>`, as in MutaMarket.
 [lints.clippy]
 result_large_err = "allow"

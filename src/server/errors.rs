@@ -74,8 +74,3 @@ pub async fn not_found(uri: Uri, headers: HeaderMap) -> Response {
 pub async fn method_not_allowed() -> Response {
     error_page(StatusCode::METHOD_NOT_ALLOWED)
 }
-
-/// The answer of every route that is registered but not ported yet.
-pub async fn not_implemented() -> Response {
-    json_error(StatusCode::NOT_IMPLEMENTED, "Not Implemented")
-}

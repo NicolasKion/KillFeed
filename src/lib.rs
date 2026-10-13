@@ -1,9 +1,13 @@
+pub mod background;
+pub mod characters;
 pub mod clock;
 pub mod config;
 pub mod db;
+pub mod demo;
 pub mod eve;
 pub mod html;
 pub mod jobs;
+pub mod json;
 pub mod killmails;
 pub mod listener;
 pub mod options;
@@ -11,3 +15,4 @@ pub mod purge;
 pub mod scheduler;
 pub mod server;
 pub mod ship_types;
+pub mod zkillboard;

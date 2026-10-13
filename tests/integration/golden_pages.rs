@@ -8,14 +8,16 @@
 
 use serde_json::{Value, json};
 
-use crate::common::golden::{self, GoldenPage, api_path, job_kind, written_now};
+use crate::common::golden::{
+    self, GoldenPage, api_path, involvements_by_id, job_kind, written_now,
+};
 use crate::common::{TestApp, assert_json_eq};
 
 /// The jobs queued, as the recorder wrote them.
 async fn queued(app: &TestApp) -> Value {
     let rows: Vec<(String, i64, bool, bool)> = sqlx::query_as(
-        "select kind, killmail_id, payload->'zkb' is not null and payload->>'zkb' <> 'null',
-                payload->'esi' is not null and payload->>'esi' <> 'null'
+        "select kind, killmail_id, coalesce(jsonb_typeof(payload->'zkb') = 'object', false),
+                coalesce(jsonb_typeof(payload->'esi') = 'object', false)
          from jobs order by id",
     )
     .fetch_all(&app.pool)
@@ -61,8 +63,8 @@ async fn check(name: &str) {
     );
     if let Some(expected) = &golden.props {
         assert_json_eq(
-            &written_now(expected, now),
-            &written_now(&response.json(), now),
+            &involvements_by_id(&written_now(expected, now)),
+            &involvements_by_id(&written_now(&response.json(), now)),
         );
     }
     assert_json_eq(
