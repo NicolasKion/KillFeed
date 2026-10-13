@@ -4,8 +4,9 @@
 
   let { children } = $props();
 
-  // The current URL without its query, as Laravel's `url()->current()`.
-  const currentUrl = $derived(page.url.origin + page.url.pathname);
+  // The current URL without its query and trailing slash, as Laravel's
+  // `url()->current()`.
+  const currentUrl = $derived((page.url.origin + page.url.pathname).replace(/\/+$/, ''));
 </script>
 
 <svelte:head>

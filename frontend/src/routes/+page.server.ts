@@ -1,3 +1,11 @@
+import type { SimShip } from '#lib/killfeed.ts';
 import { loadPage } from '#lib/server/api.ts';
 
-export const load = loadPage<Record<string, unknown>>;
+export type HomeProps = {
+  max_visible_killmails: number;
+  max_killmail_age_hours: number;
+  discord_invite_url: string | null;
+  sim_ships: SimShip[];
+};
+
+export const load = loadPage<HomeProps>;

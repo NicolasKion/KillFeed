@@ -18,7 +18,9 @@ export const VISUAL_PAGES: VisualPage[] = [
   { name: 'character-summary', path: '/2112625428?summary=1&count=3&hours=24' },
 ];
 
-/** What the page heads are compared by, read after hydration. */
+/** What the page heads are compared by, read after hydration. Link
+ * targets are compared resolved (SvelteKit's client makes the icon links
+ * absolute; the served HTML has them as Laravel wrote them). */
 export function readHead() {
   const meta: Record<string, string | null> = {};
   for (const element of document.head.querySelectorAll('meta[name], meta[property]')) {
@@ -26,12 +28,7 @@ export function readHead() {
       element.getAttribute('content');
   }
   const links = [...document.head.querySelectorAll('link')].map((link) =>
-    [
-      link.getAttribute('rel'),
-      link.getAttribute('href'),
-      link.getAttribute('type'),
-      link.getAttribute('sizes'),
-    ]
+    [link.getAttribute('rel'), link.href, link.getAttribute('type'), link.getAttribute('sizes')]
       .filter((part) => part !== null)
       .join(' '),
   );

@@ -3,6 +3,15 @@
 # node server. Keep the path list in sync with frontend/proxy-paths.ts and
 # deploy/Caddyfile.
 
+# The local preview proxy (portal, https://killfeed.test) sits in front
+# of this one; its X-Forwarded-Proto is kept, so pages know they are on
+# https.
+{
+	servers {
+		trusted_proxies static private_ranges
+	}
+}
+
 :5316 {
 	encode zstd gzip
 	# The security headers production sends too.

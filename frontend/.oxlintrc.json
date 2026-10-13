@@ -19,6 +19,11 @@
   },
   "overrides": [
     {
+      // SvelteKit's ambient types need the file to be a module.
+      "files": ["src/app.d.ts"],
+      "rules": { "unicorn/require-module-specifiers": "off" }
+    },
+    {
       // The e2e specs walk pages and seed the database one step at a
       // time on purpose.
       "files": ["e2e/**"],

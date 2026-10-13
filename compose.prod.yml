@@ -42,6 +42,9 @@ services:
       AXUM_URL: http://killfeed-api:3000
       ORIGIN: https://killfeed.killmail.space
       TZ: UTC
+      # The page origin (og:url, og:image) from the scheme Caddy saw and
+      # the Host it passed on.
+      PROTOCOL_HEADER: x-forwarded-proto
     depends_on:
       - api
     networks:

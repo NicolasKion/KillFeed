@@ -23,6 +23,8 @@ function killmail(id: number, overrides: Partial<OverlayKillmail> = {}): Overlay
   };
 }
 
+// The overlay has a 1 pixel border on both sides: 2 pixels more than
+// the cards.
 async function renderAt(width: number, props: Record<string, unknown>) {
   document.body.style.margin = '0';
   const screen = await render(KillfeedOverlay, {
@@ -42,7 +44,7 @@ async function renderAt(width: number, props: Record<string, unknown>) {
 
 describe('KillfeedOverlay', () => {
   it('fills the strip with cards and N/A tiles', async () => {
-    const screen = await renderAt(640, {
+    const screen = await renderAt(642, {
       killmails: [killmail(1, { ship_meta_group_id: 2, solo: 1 })],
       killmailsCount: 1,
     });
@@ -55,7 +57,7 @@ describe('KillfeedOverlay', () => {
   });
 
   it('shows the number of involved characters, a red dot for a loss', async () => {
-    const screen = await renderAt(256, {
+    const screen = await renderAt(258, {
       killmails: [killmail(1), killmail(2, { character_id: 2112625428 })],
       killmailsCount: 2,
       showMeta: false,
@@ -68,7 +70,7 @@ describe('KillfeedOverlay', () => {
   });
 
   it('collapses what does not fit into the +N tile', async () => {
-    const screen = await renderAt(384, {
+    const screen = await renderAt(386, {
       killmails: [killmail(1), killmail(2), killmail(3), killmail(4)],
       killmailsCount: 20,
       hours: 36,

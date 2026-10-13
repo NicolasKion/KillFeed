@@ -3,10 +3,10 @@
 
 export const TWEEN_DURATION_MS = 800;
 
-export function easeOutCubic(_t: number): number {
-  throw new Error('not implemented');
+export function easeOutCubic(t: number): number {
+  return 1 - (1 - t) ** 3;
 }
 
-export function tweenDuration(_reducedMotion: boolean): number {
-  throw new Error('not implemented');
+export function tweenDuration(reducedMotion: boolean): number {
+  return reducedMotion ? 0 : TWEEN_DURATION_MS;
 }

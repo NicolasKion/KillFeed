@@ -13,10 +13,10 @@
     "robots": "noindex"
   },
   "links": [
-    "icon /favicon.svg image/svg+xml",
-    "icon /favicon-32.png image/png 32x32",
-    "apple-touch-icon /apple-touch-icon.png",
-    "preconnect https://fonts.bunny.net",
+    "icon https://killfeed.killmail.space/favicon.svg image/svg+xml",
+    "icon https://killfeed.killmail.space/favicon-32.png image/png 32x32",
+    "apple-touch-icon https://killfeed.killmail.space/apple-touch-icon.png",
+    "preconnect https://fonts.bunny.net/",
     "stylesheet https://fonts.bunny.net/css?family=figtree:400,500,600|chakra-petch:600,700|jetbrains-mono:400,600&display=swap"
   ],
   "lang": "en"

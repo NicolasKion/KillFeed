@@ -10,4 +10,4 @@ declare global {
   }
 }
 
-export type App = typeof globalThis;
+export {};
