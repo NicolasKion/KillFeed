@@ -19,8 +19,11 @@
 //! - On shutdown it finishes the current item, stores the sequence and
 //!   ends (`app:stop-listening` is gone).
 //!
-//! A gap (the listener stopped, the cutover) is replayed in order while
-//! R2Z2 still has the files; files it no longer has answer 404 like the
+//! R2Z2 keeps a sequence file for at least 24 hours and allows 15
+//! requests a second per IP (zKillboard's R2Z2 wiki page); the 100 ms
+//! between items keeps the listener under that. A gap (the listener
+//! stopped, the cutover) is replayed in order while R2Z2 still has the
+//! files, so any stop shorter than a day loses nothing; files it no longer has answer 404 like the
 //! head of the stream, so after the ten 404s the listener jumps to the
 //! present, and the gap heals through the per-character zKillboard
 //! backfill of every overlay view (`zkillboard.rs`).
