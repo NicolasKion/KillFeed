@@ -171,6 +171,32 @@ Tests: `listener::resumes_after_the_stored_sequence`,
 It dispatched `ProcessKillmail` without zKillboard data, which returns
 right away: the command never did anything.
 
+### A killmail's involvements in id order
+
+Laravel loaded them without an order, and MySQL answered in whichever
+index order its plan picked (by character id on some overlays, by id on
+others). They come by id now. The overlay only counts them.
+
+Tests: `golden_pages` (normalization N6), `golden_jobs`.
+
+### One failed ESI lookup per setup page view
+
+The setup page's thirteen demo ships each asked ESI three times half a
+second apart while it failed (13 seconds per view in an outage, hidden
+in Laravel by the month-long cache above). Once one lookup fails, the
+rest of the view uses Tech I without asking. With the EVE services
+switched off or ESI's error limit nearly used up, no lookup retries.
+
+Test: `ship_type_service::a_failed_demo_ship_lookup_is_retried`.
+
+### The EVE services can be switched off
+
+`EVE_APIS_ENABLED=false` (the dev compose's default) fails every call to
+ESI, zKillboard and R2Z2 at once, so a local stack never reaches them.
+
+Tests: `character_preview::with_the_eve_services_off_nothing_is_asked`,
+`demo_seed::the_sample_overlay_shows_a_week_of_killmails`.
+
 ### Housekeeping
 
 Laravel's database cache and `failed_jobs` were never cleaned (the cache
