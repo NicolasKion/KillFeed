@@ -1,16 +1,16 @@
 //! Error answers: JSON under `/api` and for clients that ask for JSON
 //! (the setup page's preview fetch sends `Accept: application/json`),
-//! Laravel's minimal error page everywhere else.
+//! a minimal error page everywhere else.
 
 use axum::Json;
 use axum::http::{HeaderMap, StatusCode, Uri, header};
 use axum::response::{Html, IntoResponse, Response};
 use serde_json::json;
 
-/// Laravel's minimal error view with the status and its message.
+/// The minimal error page with the status and its message.
 const ERROR_PAGE: &str = include_str!("error.html");
 
-/// The message of a status, as Laravel's error pages show it.
+/// The message of a status, as the error pages show it.
 pub fn message(status: StatusCode) -> &'static str {
     match status.as_u16() {
         401 => "Unauthorized",
@@ -36,7 +36,7 @@ pub fn error_page(status: StatusCode) -> Response {
     (status, Html(page)).into_response()
 }
 
-/// Whether the client asked for JSON (Laravel's `expectsJson`).
+/// Whether the client asked for JSON.
 pub fn wants_json(headers: &HeaderMap) -> bool {
     headers
         .get(header::ACCEPT)
@@ -55,7 +55,7 @@ pub fn server_error(error: impl std::fmt::Display) -> Response {
 }
 
 /// Unknown paths: JSON for the api and for JSON clients (with the route
-/// in the message, as Laravel words it), the 404 page otherwise.
+/// in the message), the 404 page otherwise.
 pub async fn not_found(uri: Uri, headers: HeaderMap) -> Response {
     if uri.path() == "/api" || uri.path().starts_with("/api/") {
         json_error(StatusCode::NOT_FOUND, message(StatusCode::NOT_FOUND))

@@ -1,7 +1,6 @@
 //! The EVE services the app calls: ESI (character names, type dogma,
 //! killmails), zKillboard (a character's latest killmails) and its R2Z2
-//! firehose. One HTTP client with the app's User-Agent for all three, as
-//! Laravel's global request middleware set it.
+//! firehose. One HTTP client with the app's User-Agent for all three.
 //!
 //! ESI is called at its unversioned routes with a pinned compatibility
 //! date. The client keeps to `ESI_MAX_RPS` and, when ESI reports fewer
@@ -39,7 +38,7 @@ pub struct Answer {
 }
 
 impl Answer {
-    /// Laravel's `successful()`: a 2xx.
+    /// A 2xx.
     pub fn ok(&self) -> bool {
         (200..300).contains(&self.status)
     }

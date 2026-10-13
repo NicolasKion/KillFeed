@@ -1,5 +1,4 @@
-//! HTML escaping, as Blade's `{{ }}` (PHP's htmlspecialchars with
-//! ENT_QUOTES) did.
+//! HTML escaping of text and attribute values, single quotes included.
 
 pub fn escape(text: &str) -> String {
     let mut escaped = String::with_capacity(text.len());
@@ -19,7 +18,7 @@ pub fn escape(text: &str) -> String {
 #[cfg(test)]
 mod tests {
     #[test]
-    fn escapes_like_htmlspecialchars() {
+    fn escapes_markup_and_quotes() {
         assert_eq!(
             super::escape(r#"Body & Face <"x"> 'y'"#),
             "Body &amp; Face &lt;&quot;x&quot;&gt; &#039;y&#039;"

@@ -1,20 +1,18 @@
-//! The durable job queue in Postgres, in place of Laravel's database
-//! queue and its ten workers: `process_killmail` (store a killmail, with
+//! The durable job queue in Postgres: `process_killmail` (store a killmail, with
 //! the zKillboard and ESI data it came with, fetching ESI's when missing)
 //! and `backfill_meta_group` (heal a killmail stored without its ship's
 //! meta group).
 //!
-//! One pending job per kind and killmail (a partial unique index, what
-//! `ShouldBeUnique` amounted to): queuing a killmail that is already
+//! One pending job per kind and killmail (a partial unique index):
+//! queuing a killmail that is already
 //! queued is a no-op, which also absorbs the listener reading killmails
 //! again after its skip ahead. Workers in the api claim due jobs with
-//! `for update skip locked`. A job gets one try like Laravel's workers
-//! gave it; done jobs are deleted, failed ones kept with their error (and
+//! `for update skip locked`. A job gets one try; done jobs are deleted, failed ones kept with their error (and
 //! dropped after a week by the housekeeping) without blocking the
 //! killmail from being queued again.
 //!
 //! EVE's daily downtime (11:00 to 11:15 UTC): a killmail job taken then
-//! waits until 11:15 without running (FIXES.md).
+//! waits until 11:15 without running.
 
 use std::time::Duration as StdDuration;
 
@@ -33,7 +31,7 @@ use crate::ship_types::meta_group_id;
 pub const PROCESS_KILLMAIL: &str = "process_killmail";
 pub const BACKFILL_META_GROUP: &str = "backfill_meta_group";
 
-/// Tries of a killmail fetch from ESI (Laravel's `Http::retry(5, 1000)`).
+/// Tries of a killmail fetch from ESI, a second apart.
 const ESI_KILLMAIL_TRIES: usize = 5;
 
 const DOWNTIME_START: Time = time::macros::time!(11:00);

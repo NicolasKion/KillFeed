@@ -1,6 +1,6 @@
 //! The killmail shapes: ESI's killmail (stored as `killmails.data` with
-//! every optional key present, `null` when ESI left it out, as the PHP
-//! DTOs serialized it), zKillboard's `zkb` block, and an R2Z2 firehose
+//! every optional key present, `null` when ESI left it out),
+//! zKillboard's `zkb` block, and an R2Z2 firehose
 //! item carrying both.
 
 use serde::{Deserialize, Serialize};
@@ -119,8 +119,7 @@ impl EsiKillmail {
     }
 }
 
-/// A float the way PHP's `(float)` cast read it: a number or a numeric
-/// string.
+/// A float given as a number or a numeric string.
 fn float(value: &Value, key: &str) -> Result<f64, String> {
     match value.get(key) {
         Some(Value::Number(number)) => number.as_f64().ok_or_else(|| format!("zkb.{key}")),

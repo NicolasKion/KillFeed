@@ -1,5 +1,5 @@
 //! The ESI client: unversioned routes with a compatibility date, and the
-//! error limit door (FIXES.md, deliberate changes).
+//! error limit door.
 
 use time::Duration;
 

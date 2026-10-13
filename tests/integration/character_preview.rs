@@ -1,4 +1,4 @@
-//! tests/Feature/CharacterPreviewTest.php: the preview the setup page
+//! The preview the setup page
 //! fetches while a character id is typed, plus its failures.
 
 use serde_json::json;
@@ -58,7 +58,7 @@ async fn a_known_character_is_not_asked_for_again() {
 }
 
 /// An id ESI does not know is a 404, `{"message": ""}` for the setup
-/// page's fetch as Laravel's `abort(404)` answered.
+/// page's fetch.
 #[tokio::test]
 async fn an_unknown_character_is_not_found() {
     let app = TestApp::new().await;
@@ -70,7 +70,7 @@ async fn an_unknown_character_is_not_found() {
     assert_eq!(app.count("characters").await, 0);
 }
 
-/// FIXES.md: ESI answering 5xx or 420 is a 404 as well.
+/// ESI answering 5xx or 420 is a 404 as well.
 #[tokio::test]
 async fn a_failing_esi_is_not_found() {
     let app = TestApp::new().await;
@@ -82,7 +82,7 @@ async fn a_failing_esi_is_not_found() {
     );
 }
 
-/// FIXES.md: an unreachable ESI is a 404, not a 500.
+/// An unreachable ESI is a 404, not a 500.
 #[tokio::test]
 async fn an_unreachable_esi_is_not_found() {
     let mut app = TestApp::new().await;
@@ -95,7 +95,7 @@ async fn an_unreachable_esi_is_not_found() {
     assert_eq!(app.get("/api/pages/2112625428").await.status, 404);
 }
 
-/// FIXES.md: an id beyond 64 bits is a 404 without asking ESI.
+/// An id beyond 64 bits is a 404 without asking ESI.
 #[tokio::test]
 async fn an_id_beyond_64_bits_is_not_found() {
     let app = TestApp::new().await;

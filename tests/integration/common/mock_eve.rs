@@ -156,11 +156,10 @@ impl MockEve {
         self.inner.lock().expect("mock state").received.clear();
     }
 
-    /// The shared answers of tests/fixtures/eve.json (the ones the Laravel
-    /// reference got while recording): `esi:<path>` and
+    /// The shared answers of tests/fixtures/eve.json: `esi:<path>` and
     /// `zkillboard:<path>`, with dataset times resolved against `now`.
     pub fn load_fixture(&self, now: time::OffsetDateTime) {
-        let fakes = super::golden::read_json("eve.json");
+        let fakes = super::dataset::read_json("eve.json");
         for (key, answer) in fakes.as_object().expect("an object") {
             let (service, path) = key.split_once(':').expect("service:path");
             let path = match service {
@@ -169,7 +168,7 @@ impl MockEve {
             };
             let reply = Reply {
                 status: answer["status"].as_u64().unwrap_or(200) as u16,
-                body: Some(super::golden::resolve(&answer["body"], now)),
+                body: Some(super::dataset::resolve(&answer["body"], now)),
                 headers: Vec::new(),
             };
             self.on(&path, reply);

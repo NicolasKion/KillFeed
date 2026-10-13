@@ -1,11 +1,5 @@
-import type { Handle, HandleFetch } from '@sveltejs/kit/hooks';
+import type { HandleFetch } from '@sveltejs/kit/hooks';
 import { AXUM_URL } from '$app/env/private';
-
-import { inertiaReload } from '#lib/server/inertia.ts';
-
-export const handle: Handle = async ({ event, resolve }) => {
-  return inertiaReload(event.request, event.url) ?? resolve(event);
-};
 
 // Server-side loads reach Axum directly; the browser goes through the
 // shared-origin proxy instead.

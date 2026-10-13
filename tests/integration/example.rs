@@ -1,4 +1,4 @@
-//! tests/Feature/ExampleTest.php: the setup page answers.
+//! The setup page answers.
 
 use crate::common::TestApp;
 

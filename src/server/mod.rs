@@ -10,10 +10,6 @@ pub mod pages;
 use std::sync::Arc;
 
 use axum::Router;
-use axum::extract::Request;
-use axum::http::{StatusCode, header};
-use axum::middleware::Next;
-use axum::response::{IntoResponse, Response};
 use axum::routing::get;
 use sqlx::PgPool;
 use tokio::sync::Notify;
@@ -56,7 +52,7 @@ impl AppState {
 }
 
 /// The app with every route. A trailing slash is ignored before routing
-/// (`/up/` is `/up`), as Laravel's router ignored it.
+/// (`/up/` is `/up`), so old links with one keep working.
 pub fn router(state: AppState) -> Router {
     let routes = Router::new()
         .route("/up", get(health::up))
@@ -64,13 +60,8 @@ pub fn router(state: AppState) -> Router {
         .nest("/api", api_router())
         .fallback(errors::not_found)
         .method_not_allowed_fallback(errors::method_not_allowed)
-        .with_state(state.clone());
-    Router::new()
-        .fallback_service(NormalizePath::trim_trailing_slash(routes))
-        .layer(axum::middleware::from_fn_with_state(
-            state,
-            reload_inertia_requests,
-        ))
+        .with_state(state);
+    Router::new().fallback_service(NormalizePath::trim_trailing_slash(routes))
 }
 
 /// One props endpoint per page, at the page's own path under
@@ -81,41 +72,4 @@ fn api_router() -> Router<AppState> {
         .route("/pages/home", get(pages::home))
         .route("/pages/demo", get(pages::demo))
         .route("/pages/{character}", get(pages::character))
-}
-
-/// OBS overlays (and browsers) left open on the Laravel site poll with
-/// Inertia's XHR (`X-Inertia: true`); Caddy sends every such request
-/// here. A 409 with `X-Inertia-Location` (the full URL, query and
-/// trailing slash kept) makes Inertia load the page in full, now from
-/// SvelteKit, before anything else happens (FIXES.md).
-async fn reload_inertia_requests(
-    axum::extract::State(state): axum::extract::State<AppState>,
-    request: Request,
-    next: Next,
-) -> Response {
-    if !request.headers().contains_key("x-inertia") {
-        return next.run(request).await;
-    }
-    let headers = request.headers();
-    let scheme = headers
-        .get("x-forwarded-proto")
-        .and_then(|value| value.to_str().ok())
-        .unwrap_or_else(|| state.config.app_url.split("://").next().unwrap_or("https"));
-    let host = headers
-        .get("x-forwarded-host")
-        .or_else(|| headers.get(header::HOST))
-        .and_then(|value| value.to_str().ok())
-        .unwrap_or_else(|| state.config.app_url.split("://").nth(1).unwrap_or_default());
-    let path = request
-        .uri()
-        .path_and_query()
-        .map_or("/", |path| path.as_str());
-    let location = format!("{scheme}://{host}{path}");
-    let mut response = StatusCode::CONFLICT.into_response();
-    if let Ok(location) = location.parse() {
-        response
-            .headers_mut()
-            .insert("x-inertia-location", location);
-    }
-    response
 }

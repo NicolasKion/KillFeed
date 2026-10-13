@@ -1,5 +1,4 @@
-//! The model factories the PHP tests used (database/factories), as plain
-//! inserts with the same defaults: a character with a name and no
+//! Row factories, as plain inserts with defaults: a character with a name and no
 //! listening time, a killmail of the last hour with an empty `data`, an
 //! involvement as the victim.
 

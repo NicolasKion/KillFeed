@@ -3,10 +3,6 @@
 # (docker-compose.yml, published on :5316). Backend paths go to the api,
 # page GETs to the SvelteKit node server. Keep the path list in sync with
 # frontend/proxy-paths.ts.
-#
-# Requests carrying `X-Inertia` go to the api as well: OBS overlays left
-# open on the Laravel site keep polling with it, and the api answers 409
-# with `X-Inertia-Location`, which makes them reload into the new pages.
 {
 	# Traefik in front (or the local preview proxy): keep its
 	# X-Forwarded-* headers, so the api sees the client's address and the
@@ -22,7 +18,7 @@
 	redir @www https://{re.www.1}{uri} permanent
 
 	encode zstd gzip
-	# The headers the Forge nginx config sent.
+	# Security headers on every answer.
 	header {
 		X-Frame-Options SAMEORIGIN
 		X-XSS-Protection "1; mode=block"
@@ -33,11 +29,6 @@
 		path /api/* /up /characters/*
 	}
 	reverse_proxy @axum {$API_HOST:api}:3000
-
-	@inertia {
-		header X-Inertia *
-	}
-	reverse_proxy @inertia {$API_HOST:api}:3000
 
 	reverse_proxy {$FRONTEND_HOST:frontend}:3000
 }

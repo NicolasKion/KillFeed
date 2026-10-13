@@ -17,7 +17,7 @@ reqwest = { version = "0.13", default-features = false, features = [
 ] }
 serde = { version = "1", features = ["derive"] }
 # float_roundtrip: killmail positions and ISK values parse to the exact
-# f64 PHP's json_decode gave, so the stored `data` matches.
+# f64 they were written as, so the stored `data` matches ESI's.
 serde_json = { version = "1", features = ["float_roundtrip"] }
 sqlx = { version = "0.9", features = [
     "runtime-tokio",
@@ -33,7 +33,7 @@ tokio = { version = "1", features = ["rt-multi-thread", "macros", "sync", "time"
 # The shutdown signal the listener, the workers and the scheduler share.
 tokio-util = "0.7"
 tower = "0.5"
-# Trailing slashes are ignored, as Laravel's router ignored them.
+# Trailing slashes are ignored, so `/up/` is `/up`.
 tower-http = { version = "0.7", features = ["normalize-path"] }
 tracing = "0.1.44"
 tracing-subscriber = { version = "0.3.23", features = ["env-filter"] }

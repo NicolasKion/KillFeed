@@ -1,4 +1,4 @@
-// tests/Browser/CharacterPageTest.php, plus the 10 second poll.
+// The overlay page and its 10 second poll.
 import { expect, test } from '@playwright/test';
 
 import {

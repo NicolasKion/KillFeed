@@ -1,5 +1,5 @@
-// The route contract of the whole stack (Caddy, SvelteKit, Axum), which
-// the PHP suite never covered: what OBS overlays and old links rely on.
+// The route contract of the whole stack (Caddy, SvelteKit, Axum): what
+// OBS overlays and old links rely on.
 import { expect, test } from '@playwright/test';
 
 import { createCharacter, resetDatabase } from './helpers.ts';
@@ -38,25 +38,11 @@ test('the api paths answer', async ({ request }) => {
   expect((await request.get('/characters/abc/preview')).status()).toBe(404);
 });
 
-test('unknown and dropped paths are 404 pages', async ({ request }) => {
-  for (const path of ['/nope', '/horizon', '/horizon/api/stats', '/sanctum/csrf-cookie', '/1']) {
+test('unknown paths are 404 pages', async ({ request }) => {
+  for (const path of ['/nope', '/nope/deeper', '/1']) {
     const response = await request.get(path);
     expect(response.status(), path).toBe(404);
     expect(await response.text(), path).toContain('Not Found');
-  }
-});
-
-test('an Inertia poll reloads into the new page', async ({ request }) => {
-  for (const path of ['/2112625428?count=5&summary=1', '/demo', '/']) {
-    const response = await request.get(path, {
-      headers: { 'X-Inertia': 'true', 'X-Inertia-Version': 'a7ee6c644d6c4bba14be2af9e65116a6' },
-      maxRedirects: 0,
-    });
-    expect(response.status(), path).toBe(409);
-    expect(
-      new URL(response.headers()['x-inertia-location']).pathname +
-        new URL(response.headers()['x-inertia-location']).search,
-    ).toBe(path);
   }
 });
 

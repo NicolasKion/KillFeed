@@ -1,4 +1,4 @@
-//! tests/Feature/ProcessKillmailTest.php: storing a killmail, with the ESI
+//! Storing a killmail, with the ESI
 //! data the firehose carried or fetched from ESI, plus how the storage
 //! treats repeats and odd killmails.
 
@@ -133,8 +133,7 @@ async fn it_returns_early_when_zkill_killmail_is_null() {
     assert!(stored(&app, 77777).await.is_none());
 }
 
-/// Five tries a second apart, then the job fails (Laravel's
-/// `Http::retry(5, 1000)` threw on the last one).
+/// Five tries a second apart, then the job fails.
 #[tokio::test]
 async fn a_killmail_esi_does_not_answer_fails_after_five_tries() {
     let app = TestApp::new().await;
@@ -249,7 +248,7 @@ async fn storing_a_killmail_twice_changes_nothing() {
     assert!(!changed, "an unchanged killmail keeps its updated_at");
 }
 
-/// FIXES.md: a character who is attacker and victim is stored once, as
+/// A character who is attacker and victim is stored once, as
 /// the attacker, instead of failing the whole killmail.
 #[tokio::test]
 async fn a_character_on_both_sides_is_stored_once() {

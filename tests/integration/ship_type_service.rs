@@ -1,4 +1,4 @@
-//! tests/Feature/ShipTypeServiceTest.php: a type's meta group from ESI's
+//! A type's meta group from ESI's
 //! dogma attributes, kept per type.
 
 use serde_json::json;
@@ -84,12 +84,12 @@ async fn it_falls_back_to_tech_i_without_caching_when_esi_fails() {
 
     assert_eq!(meta_group_id(&app.state, 999999).await, 1);
 
-    // Three tries (Laravel's `Http::retry(3, 500)`), nothing kept.
+    // Three tries, nothing kept.
     assert_eq!(app.eve.received().len(), 3);
     assert_eq!(app.count("ship_types").await, 0);
 }
 
-/// The 30 day cache of Laravel's `Cache::put(..., now()->addDays(30))`.
+/// A meta group is kept for 30 days.
 #[tokio::test]
 async fn the_meta_group_is_asked_again_after_30_days() {
     let app = TestApp::new().await;
@@ -102,7 +102,7 @@ async fn the_meta_group_is_asked_again_after_30_days() {
     assert_eq!(app.eve.received().len(), 2);
 }
 
-/// FIXES.md: a failed lookup of the demo ships is not kept for a month.
+/// A failed lookup of the demo ships is not kept for a month.
 /// While ESI fails, a view asks once (three tries), not for each ship.
 #[tokio::test]
 async fn a_failed_demo_ship_lookup_is_retried() {

@@ -1,14 +1,12 @@
-//! The per-character backfill (`ZKillboardService`): every overlay view
+//! The per-character backfill: every overlay view
 //! asks zKillboard for the character's latest killmails and queues the
 //! ones not stored yet, at most `count`. The listing is kept five
 //! minutes, so the overlay's 10 second poll stays within zKillboard's
-//! limits. This also heals any gap the firehose listener left (a restart,
-//! the cutover).
+//! limits. This also heals any gap the firehose listener left (a restart).
 //!
-//! Five tries like `Http::retry(5)`; when zKillboard still fails, the
-//! overlay renders from the stored killmails (FIXES.md: Laravel answered
-//! 500). An empty listing is kept like any other, and entries that do not
-//! parse are skipped (FIXES.md).
+//! Five tries; when zKillboard still fails, the overlay renders from the
+//! stored killmails. An empty listing is kept like any other, and entries
+//! that do not parse are skipped.
 
 use serde_json::Value;
 use time::Duration;

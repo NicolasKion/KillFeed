@@ -3,7 +3,7 @@
 # (the demo-seed service seeds sample characters, killmails and the demo
 # ships' meta groups, so the overlays show something)
 # The local preview on https://killfeed.test (portal):
-#   APP_URL=https://killfeed.test ORIGIN=https://killfeed.test docker compose up --build -d
+#   ORIGIN=https://killfeed.test docker compose up --build -d
 # Hot-reloading frontend instead of the built one:
 #   docker compose --profile dev up -d postgres api frontend-dev
 # Postgres alone, for `cargo run` + `npm run dev` on the host:
@@ -53,7 +53,6 @@ services:
     environment:
       DATABASE_URL: postgres://killfeed:killfeed@postgres:5432/killfeed
       BIND_ADDR: 0.0.0.0:3000
-      APP_URL: ${APP_URL:-http://localhost:5316}
       RUST_LOG: ${RUST_LOG:-info}
       EVE_APIS_ENABLED: ${EVE_APIS_ENABLED:-false}
       LISTENER_ENABLED: ${LISTENER_ENABLED:-false}

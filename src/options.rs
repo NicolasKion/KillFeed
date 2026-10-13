@@ -1,10 +1,10 @@
 //! The overlay options of the query string (`count`, `hours`, `summary`,
-//! `meta`), read the way the Laravel app read them: PHP parses the query
-//! string (the last value of a repeated key wins, `key[]` makes an
-//! array), Laravel trims every value and turns an empty one into null,
-//! `$request->integer()` is PHP's `intval()` and `$request->boolean()` is
-//! `FILTER_VALIDATE_BOOLEAN`. OBS sources keep the URLs streamers pasted,
-//! so every odd value still has to mean what it meant.
+//! `meta`). The last value of a repeated key wins and `key[]` makes an
+//! array; every value is trimmed and an empty one counts as null. A
+//! number is its leading integer (`10abc` is 10, `1e2` is 100) and a flag
+//! is true for `1`, `true`, `on` or `yes`. OBS sources keep the URLs
+//! streamers pasted, so every odd value has to keep meaning what it
+//! means.
 
 /// The options of an overlay or the demo, clamped to 1 and the maximums.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -15,7 +15,7 @@ pub struct OverlayOptions {
     pub meta: bool,
 }
 
-/// A query parameter as Laravel saw it.
+/// A query parameter, trimmed.
 #[derive(Debug, Clone, PartialEq)]
 enum Input {
     Missing,
@@ -27,7 +27,7 @@ enum Input {
 }
 
 impl OverlayOptions {
-    /// `OverlayOptions::fromRequest`: missing values take the defaults
+    /// Missing values take the defaults
     /// (the maximums, `summary` as given, `meta` on).
     pub fn from_query(
         query: Option<&str>,
@@ -45,28 +45,26 @@ impl OverlayOptions {
     }
 }
 
-/// `$request->integer($key, $default)`.
+/// A number option: null is 0, an array 1.
 fn integer(input: &Input, default: i64) -> i64 {
     match input {
         Input::Missing => default,
         Input::Null => 0,
-        Input::Text(text) => php_intval(text),
-        // intval() of a non-empty array.
+        Input::Text(text) => leading_integer(text),
         Input::Array => 1,
     }
 }
 
-/// `$request->boolean($key, $default)`.
+/// A flag option: null or an array is false.
 fn boolean(input: &Input, default: bool) -> bool {
     match input {
         Input::Missing => default,
         Input::Null | Input::Array => false,
-        Input::Text(text) => php_boolean(text),
+        Input::Text(text) => truthy(text),
     }
 }
 
-/// The value of `key` as PHP's parse_str and Laravel's TrimStrings and
-/// ConvertEmptyStringsToNull left it.
+/// The value of `key`: the last one given, trimmed, an empty one null.
 fn input(query: &str, key: &str) -> Input {
     let mut found = Input::Missing;
     for pair in query.split('&').filter(|pair| !pair.is_empty()) {
@@ -82,7 +80,7 @@ fn input(query: &str, key: &str) -> Input {
         found = if is_array {
             Input::Array
         } else {
-            let value = laravel_trim(&decode(value));
+            let value = trim(&decode(value));
             if value.is_empty() {
                 Input::Null
             } else {
@@ -93,7 +91,7 @@ fn input(query: &str, key: &str) -> Input {
     found
 }
 
-/// urldecode(): `+` is a space, `%XX` a byte.
+/// URL decoding: `+` is a space, `%XX` a byte.
 fn decode(text: &str) -> String {
     let bytes = text.as_bytes();
     let mut out = Vec::with_capacity(bytes.len());
@@ -118,17 +116,17 @@ fn decode(text: &str) -> String {
     String::from_utf8_lossy(&out).into_owned()
 }
 
-/// Laravel's `Str::trim`: whitespace and the zero width characters.
-fn laravel_trim(text: &str) -> String {
+/// Trims whitespace and the zero width characters.
+fn trim(text: &str) -> String {
     text.trim_matches(|c: char| {
         c.is_whitespace() || matches!(c, '\u{FEFF}' | '\u{200B}' | '\u{200E}')
     })
     .to_owned()
 }
 
-/// PHP's `intval()` of a string: the leading number (an exponent
-/// included, `1e2` is 100), 0 without one, capped at the 64-bit range.
-pub fn php_intval(text: &str) -> i64 {
+/// The leading number of a string (an exponent included, `1e2` is 100),
+/// truncated, 0 without one, capped at the 64-bit range.
+pub fn leading_integer(text: &str) -> i64 {
     let text = text.trim_start_matches([' ', '\t', '\n', '\r', '\x0b', '\x0c']);
     let bytes = text.as_bytes();
     let mut end = 0;
@@ -173,8 +171,7 @@ pub fn php_intval(text: &str) -> i64 {
     if !is_float && let Ok(value) = number.parse::<i64>() {
         return value;
     }
-    // A float, or an integer beyond 64 bits: PHP converts through a
-    // double and caps it.
+    // A float, or an integer beyond 64 bits: through a double, capped.
     let value: f64 = number.parse().unwrap_or(0.0);
     if value.is_nan() {
         0
@@ -187,9 +184,9 @@ pub fn php_intval(text: &str) -> i64 {
     }
 }
 
-/// `filter_var($value, FILTER_VALIDATE_BOOLEAN)`: `1`, `true`, `on` and
-/// `yes` in any case are true, anything else false.
-pub fn php_boolean(text: &str) -> bool {
+/// `1`, `true`, `on` and `yes` in any case are true, anything else
+/// false.
+pub fn truthy(text: &str) -> bool {
     let text = text.trim_matches([' ', '\t', '\n', '\r', '\x0b', '\0']);
     matches!(
         text.to_ascii_lowercase().as_str(),
@@ -202,7 +199,7 @@ mod tests {
     use super::{Input, decode, input};
 
     #[test]
-    fn reads_the_query_like_parse_str() {
+    fn reads_the_last_trimmed_value() {
         assert_eq!(
             input("count=3&count=4", "count"),
             Input::Text("4".to_owned())

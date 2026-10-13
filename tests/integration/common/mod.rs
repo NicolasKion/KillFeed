@@ -1,13 +1,13 @@
 //! Shared harness for the integration suites: the real router on the test
 //! database with a fixed clock, one mock server on an ephemeral port
 //! standing in for ESI, zKillboard and R2Z2, request helpers, the
-//! factories the PHP tests used and the golden fixtures.
+//! factories and the dataset.
 
 // Not every suite uses every helper.
 #![allow(dead_code)]
 
+pub mod dataset;
 pub mod factories;
-pub mod golden;
 pub mod mock_eve;
 
 use std::path::{Path, PathBuf};
@@ -29,11 +29,11 @@ use killfeed::server::AppState;
 
 pub use mock_eve::MockEve;
 
-/// The site URL, as the reference recorded it (scripts/laravel-reference/env).
+/// The site URL of the tests.
 pub const APP_URL: &str = "https://killfeed.killmail.space";
 pub const HOST: &str = "killfeed.killmail.space";
 
-/// The moment the ported PHP tests run at (they used `now()`).
+/// The clock of a test that does not set one.
 pub const DEFAULT_NOW: OffsetDateTime = datetime!(2026-10-12 14:30:00 UTC);
 
 pub fn repo_path(relative: &str) -> PathBuf {
@@ -57,7 +57,7 @@ pub async fn test_pool() -> PgPool {
         .expect("Postgres not reachable - start it with `docker compose up -d postgres`")
 }
 
-/// Clears every table, like Laravel's RefreshDatabase.
+/// Clears every table.
 pub async fn reset_database(pool: &PgPool) {
     sqlx::query(
         "truncate characters, killmails, killmail_involvements, ship_types, zkillboard_listings,
@@ -75,7 +75,6 @@ pub async fn reset_database(pool: &PgPool) {
 pub fn test_config(eve: &MockEve) -> Config {
     Config {
         app_name: "Killfeed".to_owned(),
-        app_url: APP_URL.to_owned(),
         max_visible_killmails: 50,
         max_killmail_age_hours: 168,
         discord_invite_url: Some("https://discord.gg/d2NZ5DRDQe".to_owned()),
@@ -111,7 +110,7 @@ impl TestApp {
     pub async fn at(now: OffsetDateTime) -> Self {
         let pool = test_pool().await;
         reset_database(&pool).await;
-        golden::create_ts_function(&pool).await;
+        dataset::create_ts_function(&pool).await;
         let eve = MockEve::start().await;
         let config = test_config(&eve);
         let clock = Clock::fixed(now);

@@ -52,9 +52,8 @@ impl InvolvementRow {
     }
 }
 
-/// The latest killmails, as Eloquent serialized
-/// `Killmail::with('killmailInvolvements')` (`solo` as MySQL's 0 or 1,
-/// the involvements by id), and the ids of those without a meta group,
+/// The latest killmails with their involvements (`solo` as 0 or 1, the
+/// involvements by id), and the ids of those without a meta group,
 /// which heal in the background.
 pub async fn latest(
     state: &AppState,

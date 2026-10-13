@@ -1,4 +1,4 @@
-//! tests/Feature/KillmailFeedTest.php: the overlay heals killmails stored
+//! The overlay heals killmails stored
 //! before meta groups were tracked.
 
 use serde_json::json;

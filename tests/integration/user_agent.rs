@@ -1,4 +1,4 @@
-//! tests/Feature/UserAgentTest.php: every outgoing request names the app
+//! Every outgoing request names the app
 //! and its maintainer.
 
 use crate::common::TestApp;

@@ -33,7 +33,6 @@ services:
     environment:
       DATABASE_URL: ${DATABASE_URL:?}
       BIND_ADDR: 0.0.0.0:3000
-      APP_URL: ${APP_URL:-https://killfeed.killmail.space}
       APP_NAME: ${APP_NAME:-}
       RUST_LOG: ${RUST_LOG:-info}
       EVE_APIS_ENABLED: "true"

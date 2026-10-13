@@ -4,8 +4,7 @@
 
   let { children } = $props();
 
-  // The current URL without its query and trailing slash, as Laravel's
-  // `url()->current()`.
+  // The current URL without its query and trailing slash.
   const currentUrl = $derived((page.url.origin + page.url.pathname).replace(/\/+$/, ''));
 </script>
 

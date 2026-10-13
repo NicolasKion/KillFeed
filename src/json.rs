@@ -1,11 +1,12 @@
-//! JSON the way the Laravel app wrote it: Eloquent's date format and
-//! PHP's json_encode numbers.
+//! The JSON conventions of the api: its date format and whole numbers
+//! written as integers.
 
 use serde_json::Value;
 use time::OffsetDateTime;
 use time::macros::format_description;
 
-/// Eloquent's date serialization: `2026-10-12T14:00:00.000000Z`.
+/// The date format of every timestamp the api writes:
+/// `2026-10-12T14:00:00.000000Z`.
 pub fn timestamp(moment: OffsetDateTime) -> String {
     moment
         .to_offset(time::UtcOffset::UTC)
@@ -19,9 +20,9 @@ pub fn optional_timestamp(moment: Option<OffsetDateTime>) -> Value {
     moment.map_or(Value::Null, |moment| Value::String(timestamp(moment)))
 }
 
-/// json_encode writes a float without a fraction as an integer (`1.0` is
-/// `1`): the props carry the same numbers.
-pub fn php_numbers(value: Value) -> Value {
+/// A float without a fraction is written as an integer (`1.0` is `1`),
+/// in the props and in the stored killmail data.
+pub fn whole_numbers(value: Value) -> Value {
     match value {
         Value::Number(number) if number.is_f64() => {
             let float = number.as_f64().unwrap_or_default();
@@ -31,11 +32,11 @@ pub fn php_numbers(value: Value) -> Value {
                 Value::Number(number)
             }
         }
-        Value::Array(items) => Value::Array(items.into_iter().map(php_numbers).collect()),
+        Value::Array(items) => Value::Array(items.into_iter().map(whole_numbers).collect()),
         Value::Object(fields) => Value::Object(
             fields
                 .into_iter()
-                .map(|(key, value)| (key, php_numbers(value)))
+                .map(|(key, value)| (key, whole_numbers(value)))
                 .collect(),
         ),
         other => other,
@@ -47,10 +48,10 @@ mod tests {
     use serde_json::json;
     use time::macros::datetime;
 
-    use super::{php_numbers, timestamp};
+    use super::{timestamp, whole_numbers};
 
     #[test]
-    fn writes_eloquent_dates() {
+    fn writes_dates_with_microseconds() {
         assert_eq!(
             timestamp(datetime!(2026-10-12 14:00:05 UTC)),
             "2026-10-12T14:00:05.000000Z"
@@ -58,9 +59,9 @@ mod tests {
     }
 
     #[test]
-    fn writes_numbers_like_json_encode() {
+    fn writes_whole_floats_as_integers() {
         assert_eq!(
-            php_numbers(json!({ "a": [1.0, 2.5, -0.0, 3], "b": 300000000000.0, "c": 1e20 })),
+            whole_numbers(json!({ "a": [1.0, 2.5, -0.0, 3], "b": 300000000000.0, "c": 1e20 })),
             json!({ "a": [1, 2.5, 0, 3], "b": 300000000000_i64, "c": 1e20 })
         );
     }

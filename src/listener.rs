@@ -1,4 +1,4 @@
-//! The R2Z2 firehose listener (`app:listen-for-kills`): reads zKillboard's
+//! The R2Z2 firehose listener: reads zKillboard's
 //! killmail stream one sequence file at a time and queues the killmails
 //! of characters with an overlay open (`listening_since` in the last five
 //! minutes) with the zKillboard and ESI data the item carries, so no ESI
@@ -11,18 +11,17 @@
 //!   the firehose is and goes on from there. At the head of the stream
 //!   that is usually a few sequences back, so killmails are read again;
 //!   the queue's one-job-per-killmail rule and the storage make that a
-//!   no-op (FIXES.md, needs owner decision).
+//!   no-op.
 //! - Any other failure, a connection error included, is retried on the
-//!   same sequence after 6 seconds (Laravel's command died on a
-//!   connection error and supervisor restarted it). An item that does not
-//!   parse is logged and skipped (FIXES.md).
+//!   same sequence after 6 seconds. An item that does not parse is logged
+//!   and skipped.
 //! - On shutdown it finishes the current item, stores the sequence and
-//!   ends (`app:stop-listening` is gone).
+//!   ends.
 //!
 //! R2Z2 keeps a sequence file for at least 24 hours and allows 15
 //! requests a second per IP (zKillboard's R2Z2 wiki page); the 100 ms
 //! between items keeps the listener under that. A gap (the listener
-//! stopped, the cutover) is replayed in order while R2Z2 still has the
+//! stopped) is replayed in order while R2Z2 still has the
 //! files, so any stop shorter than a day loses nothing; files it no longer has answer 404 like the
 //! head of the stream, so after the ten 404s the listener jumps to the
 //! present, and the gap heals through the per-character zKillboard

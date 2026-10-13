@@ -1,5 +1,4 @@
-//! The R2Z2 firehose listener (`app:listen-for-kills`), which the PHP
-//! suite never covered, against the mock firehose: where it starts, how
+//! The R2Z2 firehose listener against the mock firehose: where it starts, how
 //! it waits for and skips missing sequences, retries failures, which
 //! killmails it queues and how it stops.
 
@@ -209,7 +208,7 @@ async fn a_failure_is_retried_on_the_same_sequence() {
     assert_eq!(app.eve.paths_under("/r2z2")[..3], ["/r2z2/7.json"; 3]);
 }
 
-/// FIXES.md: an unreachable firehose is retried instead of ending the
+/// An unreachable firehose is retried instead of ending the
 /// listener.
 #[tokio::test]
 async fn a_connection_error_is_retried() {
@@ -225,7 +224,7 @@ async fn a_connection_error_is_retried() {
     assert_eq!(stored_sequence(&app).await, Some(1));
 }
 
-/// FIXES.md: an item that does not parse is logged and skipped.
+/// An item that does not parse is logged and skipped.
 #[tokio::test]
 async fn a_broken_item_is_skipped() {
     let app = TestApp::new().await;

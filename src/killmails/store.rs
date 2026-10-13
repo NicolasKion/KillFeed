@@ -131,8 +131,8 @@ pub async fn store(
     .await?;
 
     // Attackers first, then the victim. A character already on the
-    // killmail keeps its first role (FIXES.md: Laravel's updateOrCreate
-    // hit the unique index and lost the killmail).
+    // killmail keeps its first role, so one character on both sides
+    // does not hit the unique index.
     let roles = attackers
         .iter()
         .map(|id| (*id, true))

@@ -1,5 +1,5 @@
 //! The app's notion of now, in UTC and whole seconds like the timestamps
-//! it stores and serializes (Eloquent kept `Y-m-d H:i:s`). Tests fix the
+//! it stores and serializes. Tests fix the
 //! clock at a known moment and move it by hand.
 
 use std::sync::{Arc, RwLock};

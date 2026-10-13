@@ -1,9 +1,7 @@
-//! The schedule Laravel ran from cron (`routes/console.php`, in UTC like
-//! the app): the purge of old killmails daily at 00:00. A run missed
-//! while the api was down is skipped, as `schedule:run` skipped it (the
-//! purge is by age, so the next night catches up). New: the housekeeping
-//! every hour drops expired zKillboard listings and failed jobs older
-//! than a week (Laravel's cache and `failed_jobs` were never cleaned).
+//! The schedule, in UTC: the purge of old killmails daily at 00:00. A
+//! run missed while the api was down is skipped (the purge is by age, so
+//! the next night catches up). The housekeeping every hour drops expired
+//! zKillboard listings and failed jobs older than a week.
 
 use std::time::Duration as StdDuration;
 

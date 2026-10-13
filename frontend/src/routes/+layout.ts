@@ -1,3 +1,3 @@
 // OBS sources keep the URLs streamers pasted, `/demo/` and `/123/`
-// included; Laravel answered those directly, so no redirect here either.
+// included, and they answer directly, without a redirect.
 export const trailingSlash = 'ignore';

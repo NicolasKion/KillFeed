@@ -1,5 +1,4 @@
-// The messages of the error pages, the api's list (Laravel's English
-// defaults).
+// The messages of the error pages, the same list as the api's.
 const MESSAGES: Record<number, string> = {
   401: 'Unauthorized',
   402: 'Payment Required',

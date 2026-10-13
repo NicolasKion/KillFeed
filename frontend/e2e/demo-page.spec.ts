@@ -1,4 +1,4 @@
-// tests/Browser/DemoPageTest.php.
+// The demo page.
 import { expect, test } from '@playwright/test';
 
 import { assertSee, stubEveImages, trackJavascriptErrors } from './helpers.ts';

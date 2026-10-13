@@ -1,4 +1,4 @@
-//! tests/Feature/DemoTest.php: the demo page's options.
+//! The demo page's options.
 
 use crate::common::TestApp;
 

@@ -1,7 +1,5 @@
-//! The props of every page, one JSON endpoint per Inertia page of the
-//! Laravel app (`/api/pages/<path>`), key for key without the Inertia
-//! envelope (`errors` and `auth` were always empty): the setup page, the
-//! demo and the overlay. SvelteKit's `+page.server.ts` loads them; the
+//! The props of every page, one JSON endpoint per page
+//! (`/api/pages/<path>`): the setup page, the demo and the overlay. SvelteKit's `+page.server.ts` loads them; the
 //! overlay's 10 second poll reloads them, which is what keeps the
 //! character watched by the listener.
 
@@ -15,14 +13,14 @@ use super::AppState;
 use super::errors::{error_page, json_error, server_error, wants_json};
 use crate::characters::{self, ResolveError};
 use crate::jobs::enqueue_backfill_meta_group;
-use crate::json::php_numbers;
+use crate::json::whole_numbers;
 use crate::killmails::feed;
 use crate::options::OverlayOptions;
 use crate::ship_types::demo_ships;
 use crate::zkillboard::queue_recent_killmails;
 
 fn props(value: Value) -> Response {
-    Json(php_numbers(value)).into_response()
+    Json(whole_numbers(value)).into_response()
 }
 
 fn options(state: &AppState, query: Option<&str>, default_summary: bool) -> OverlayOptions {
@@ -34,8 +32,8 @@ fn options(state: &AppState, query: Option<&str>, default_summary: bool) -> Over
     )
 }
 
-/// Laravel's `abort(404)`: `{"message": ""}` for JSON clients and the
-/// api, the 404 page otherwise.
+/// Not found: `{"message": ""}` for JSON clients and the api, the 404
+/// page otherwise.
 pub fn abort_not_found(headers: &HeaderMap, api: bool) -> Response {
     if api || wants_json(headers) {
         json_error(StatusCode::NOT_FOUND, "")
@@ -44,7 +42,7 @@ pub fn abort_not_found(headers: &HeaderMap, api: bool) -> Response {
     }
 }
 
-/// The setup page (`Home`).
+/// The setup page.
 pub async fn home(State(state): State<AppState>) -> Response {
     props(json!({
         "max_visible_killmails": state.config.max_visible_killmails,
@@ -54,7 +52,7 @@ pub async fn home(State(state): State<AppState>) -> Response {
     }))
 }
 
-/// The simulated overlay (`Demo`); the summary panel is on by default.
+/// The simulated overlay; the summary panel is on by default.
 pub async fn demo(State(state): State<AppState>, RawQuery(query): RawQuery) -> Response {
     let options = options(&state, query.as_deref(), true);
     props(json!({
@@ -66,7 +64,7 @@ pub async fn demo(State(state): State<AppState>, RawQuery(query): RawQuery) -> R
     }))
 }
 
-/// The overlay (`Character`), in Laravel's order: the character (from
+/// The overlay, in this order: the character (from
 /// ESI when it has no name yet), the zKillboard backfill, the character
 /// marked as listening, the totals and the latest killmails.
 pub async fn character(

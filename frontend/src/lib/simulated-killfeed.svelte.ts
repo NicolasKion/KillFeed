@@ -1,7 +1,7 @@
 // The simulated killfeed of the setup page and the demo: synthetic
 // killmails of the demo ships, a new one every 2.5 to 6 seconds. The
-// draws from `random` happen in the order the Vue version made them, so
-// a seeded Math.random gives the same feed on both.
+// draws from `random` happen in a fixed order, so a seeded Math.random
+// gives the same feed every time.
 import type { OverlayCharacter, OverlayKillmail, SimShip } from '#lib/killfeed.ts';
 
 export const SIMULATED_CHARACTER: OverlayCharacter = {

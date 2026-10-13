@@ -1,4 +1,4 @@
-//! Health checks: Laravel's `/up` page and the deploy check `/api/health`.
+//! Health checks: the `/up` page and the deploy check `/api/health`.
 
 use std::time::Instant;
 
@@ -11,7 +11,7 @@ use serde_json::json;
 use super::AppState;
 use crate::html::escape;
 
-/// Laravel's health page (`withRouting(health: '/up')`).
+/// The health page.
 const UP_PAGE: &str = include_str!("up.html");
 
 pub async fn up(State(state): State<AppState>) -> Html<String> {

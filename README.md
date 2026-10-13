@@ -1,6 +1,7 @@
 # KillFeed
 
-[![CI](https://github.com/TimKunze96/KillFeed/actions/workflows/ci.yml/badge.svg)](https://github.com/TimKunze96/KillFeed/actions/workflows/ci.yml)
+[![CI](https://github.com/NicolasKion/KillFeed/actions/workflows/ci.yml/badge.svg)](https://github.com/NicolasKion/KillFeed/actions/workflows/ci.yml)
+[![Release](https://github.com/NicolasKion/KillFeed/actions/workflows/release.yml/badge.svg)](https://github.com/NicolasKion/KillFeed/actions/workflows/release.yml)
 [![Website](https://img.shields.io/website?url=https%3A%2F%2Fkillfeed.killmail.space&label=killfeed.killmail.space)](https://killfeed.killmail.space)
 [![Rust](https://img.shields.io/badge/Rust-Axum-DEA584?logo=rust&logoColor=white)](https://github.com/tokio-rs/axum)
 [![SvelteKit](https://img.shields.io/badge/SvelteKit-Svelte%205-FF3E00?logo=svelte&logoColor=white)](https://svelte.dev/docs/kit)
@@ -85,22 +86,28 @@ database with a fixed clock; ESI, zKillboard and R2Z2 are a local mock
 server. They pin every page's props, the firehose listener, the job
 queue and the storage of killmails. The vitest suites cover the overlay's
 logic and render it in a headless Chromium, and Playwright runs against
-the composed stack on port 5316. `scripts/parity` prints the passing
-tests over the total for all three.
+the composed stack on port 5316.
 
 ## Deployment
 
-Coolify deploys `compose.prod.yml` on the server. A merge to main runs
-`.github/workflows/release.yml`, which builds the api, frontend and proxy
-images, pushes them to `ghcr.io/nicolaskion/killfeed-*` (`latest` and the
-commit) and calls Coolify's deploy webhook, so Coolify pulls and restarts
-them. Only the proxy has a domain (https://killfeed.killmail.space);
-Traefik terminates TLS in front of it. `DATABASE_URL` (the shared
-Postgres on the `coolify` network) and `LISTENER_ENABLED=true` are
-Coolify environment variables. The API runs its migrations on startup
-(`migrate` applies them on its own and exits) and stops the listener
-cleanly on shutdown, so it resumes where it left off.
-`purge_old_killmails` runs the nightly purge by hand.
+Coolify runs `compose.prod.yml` on the server: `killfeed-api`,
+`killfeed-frontend` and `killfeed-proxy`, from images in GHCR.
+
+1. A merge to main runs `.github/workflows/release.yml` (when it touches
+   the api, the frontend, the proxy or the compose file).
+2. It builds the three images and pushes them to
+   `ghcr.io/nicolaskion/killfeed-*`, tagged `latest` and with the commit.
+3. It calls Coolify's deploy webhook (the `COOLIFY_WEBHOOK` and
+   `COOLIFY_TOKEN` secrets), and Coolify pulls the images and restarts
+   the stack.
+
+Only the proxy has a domain (https://killfeed.killmail.space); Traefik
+terminates TLS in front of it. `DATABASE_URL` (the shared Postgres on the
+`coolify` network) and `LISTENER_ENABLED=true` are Coolify environment
+variables. The API runs its migrations on startup (`migrate` applies them
+on its own and exits) and stops the listener cleanly on shutdown, so it
+resumes where it left off. `purge_old_killmails` runs the nightly purge
+by hand.
 
 ## Layout
 

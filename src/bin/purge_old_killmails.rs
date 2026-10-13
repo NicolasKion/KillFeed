@@ -1,4 +1,4 @@
-//! `php artisan app:purge-old-killmails`: deletes the killmails older
+//! Deletes the killmails older
 //! than KILLMAIL_MAX_AGE_HOURS now (the api's scheduler runs it every
 //! night at 00:00 UTC).
 

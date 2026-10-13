@@ -1,5 +1,5 @@
-//! The per-character backfill from zKillboard on every overlay view
-//! (`ZKillboardService`), which the PHP suite only faked: the listing is
+//! The per-character backfill from zKillboard on every overlay view: the
+//! listing is
 //! kept five minutes, only killmails not stored yet are queued, at most
 //! `count` of them, and zKillboard failing never breaks the overlay.
 
@@ -81,7 +81,7 @@ async fn the_listing_is_kept_for_five_minutes() {
     assert_eq!(app.eve.paths_under("/zkillboard").len(), 2);
 }
 
-/// FIXES.md: an empty listing is kept like any other.
+/// An empty listing is kept like any other.
 #[tokio::test]
 async fn an_empty_listing_is_cached_too() {
     let app = app_with_character().await;
@@ -93,7 +93,7 @@ async fn an_empty_listing_is_cached_too() {
     assert_eq!(app.eve.paths_under("/zkillboard").len(), 1);
 }
 
-/// FIXES.md: zKillboard failing (five tries) leaves the overlay rendering
+/// ZKillboard failing (five tries) leaves the overlay rendering
 /// from the stored killmails; nothing is kept, the next view asks again.
 #[tokio::test]
 async fn a_failing_zkillboard_still_renders_the_overlay() {
@@ -110,7 +110,7 @@ async fn a_failing_zkillboard_still_renders_the_overlay() {
     assert_eq!(app.eve.paths_under("/zkillboard").len(), 10);
 }
 
-/// FIXES.md: entries that do not parse are skipped; an error object
+/// Entries that do not parse are skipped; an error object
 /// instead of a list queues nothing.
 #[tokio::test]
 async fn a_broken_listing_entry_is_skipped() {

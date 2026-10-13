@@ -16,7 +16,7 @@ describe('isAxumRequest', () => {
   });
 
   it('keeps the pages and static files in SvelteKit', () => {
-    for (const path of ['/', '/demo', '/2112625428', '/og.png', '/robots.txt', '/horizon']) {
+    for (const path of ['/', '/demo', '/2112625428', '/og.png', '/robots.txt', '/nope']) {
       expect(isAxumRequest('GET', path), path).toBe(false);
     }
   });

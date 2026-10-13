@@ -26,7 +26,7 @@ pub const TECH_III: i16 = 14;
 /// How long a looked up meta group is kept.
 const KEEP_FOR: Duration = Duration::days(30);
 
-/// Tries of a lookup (Laravel's `Http::retry(3, 500)`).
+/// Tries of a lookup, half a second apart.
 const TRIES: usize = 3;
 
 /// The ships of the simulated feed (`demo_ship_type_ids`): frigate to
@@ -97,7 +97,7 @@ async fn lookup(state: &AppState, type_id: i64) -> Option<HashMap<i64, f64>> {
         {
             Ok(answer) if answer.ok() => {
                 // A body without attributes (or without JSON) is a type
-                // without any: Tech I, as Laravel's `?? []` read it.
+                // without any: Tech I.
                 let body = answer.json().unwrap_or(Value::Null);
                 return Some(
                     body["dogma_attributes"]

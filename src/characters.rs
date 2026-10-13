@@ -1,7 +1,6 @@
-//! Characters (`CharacterService`, the `Character` model): a known one
-//! by its stored name, an unknown one by ESI's public character info. Any
-//! ESI failure means not found, as `abort_if($response->failed(), 404)`
-//! did (a connection error included, FIXES.md).
+//! Characters: a known one by its stored name, an unknown one by ESI's
+//! public character info. Any ESI failure means not found, a connection
+//! error included.
 
 use serde_json::{Value, json};
 use time::OffsetDateTime;
@@ -19,7 +18,7 @@ pub struct Character {
 }
 
 impl Character {
-    /// The model as Eloquent serialized it.
+    /// The character as the props carry it.
     pub fn to_json(&self) -> Value {
         json!({
             "id": self.id,

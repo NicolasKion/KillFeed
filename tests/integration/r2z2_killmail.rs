@@ -1,4 +1,4 @@
-//! tests/Unit/R2Z2KillmailTest.php: reading an R2Z2 firehose item.
+//! Reading an R2Z2 firehose item.
 
 use serde_json::{Value, json};
 
@@ -80,7 +80,7 @@ fn it_converts_to_zkill_killmail() {
     assert_eq!(zkb.id, Some(12345));
 }
 
-/// FIXES.md: an item without its keys is refused instead of crashing the
+/// An item without its keys is refused instead of crashing the
 /// listener.
 #[test]
 fn an_item_without_its_keys_is_refused() {

@@ -1,4 +1,4 @@
-// tests/Browser/HomePageTest.php, plus the URL the setup page builds.
+// The setup page and the URL it builds.
 import { expect, test } from '@playwright/test';
 
 import {

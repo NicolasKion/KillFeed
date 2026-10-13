@@ -1,7 +1,5 @@
-//! The overlay page's own behavior beyond the golden props: its side
-//! effects and the window and count rules (tests/Browser/CharacterPageTest
-//! "marks the character as being listened to" is ported in Playwright as
-//! well).
+//! The overlay page's own behavior beyond the dataset props: its side
+//! effects and the window and count rules.
 
 use serde_json::json;
 use time::Duration;

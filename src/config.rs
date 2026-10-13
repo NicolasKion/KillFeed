@@ -1,6 +1,4 @@
-//! Runtime configuration from the environment. The variable names are the
-//! ones the Laravel app's .env and config/killfeed.php used, so its values
-//! carry over.
+//! Runtime configuration from the environment.
 
 use std::time::Duration;
 
@@ -10,9 +8,6 @@ use std::time::Duration;
 pub struct Config {
     /// `APP_NAME`: the health page title.
     pub app_name: String,
-    /// `APP_URL` without a trailing slash: the origin the Inertia reload
-    /// answer points at when a request carries no host.
-    pub app_url: String,
     /// `KILLMAIL_MAX_VISIBLE`: the most cards an overlay asks for (and the
     /// default count), at least 1.
     pub max_visible_killmails: i64,
@@ -49,7 +44,7 @@ pub struct EveConfig {
     pub user_agent: String,
     /// `ESI_MAX_RPS`: requests per second to ESI at most; 0 is unlimited.
     pub esi_max_rps: u32,
-    /// The pauses between retries (Laravel's `Http::retry` sleeps); tests
+    /// The pauses between retries; tests
     /// shorten them.
     pub timing: RetryTiming,
 }
@@ -91,7 +86,6 @@ pub struct BackgroundConfig {
 }
 
 pub const DEFAULT_APP_NAME: &str = "Killfeed";
-pub const DEFAULT_APP_URL: &str = "https://killfeed.killmail.space";
 pub const DEFAULT_MAX_VISIBLE_KILLMAILS: i64 = 50;
 pub const DEFAULT_MAX_KILLMAIL_AGE_HOURS: i64 = 168;
 pub const DEFAULT_ESI_BASE_URL: &str = "https://esi.evetech.net";
@@ -117,8 +111,7 @@ fn env_or(key: &str, default: &str) -> String {
     env(key).unwrap_or_else(|| default.to_owned())
 }
 
-/// A variable that is set and not empty (`null`, as Laravel's .env files
-/// write it, counts as unset).
+/// A variable that is set and not empty (`null` counts as unset).
 fn env(key: &str) -> Option<String> {
     std::env::var(key)
         .ok()
@@ -140,10 +133,6 @@ impl Config {
     pub fn from_env() -> Self {
         Self {
             app_name: env_or("APP_NAME", DEFAULT_APP_NAME),
-            app_url: env_or("APP_URL", DEFAULT_APP_URL)
-                .trim_end_matches('/')
-                .to_owned(),
-            // config/killfeed.php: `max(1, (int) env(...))`.
             max_visible_killmails: env_number(
                 "KILLMAIL_MAX_VISIBLE",
                 DEFAULT_MAX_VISIBLE_KILLMAILS,
