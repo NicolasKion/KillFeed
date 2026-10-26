@@ -35,6 +35,8 @@ const CONNECT_TIMEOUT: Duration = Duration::from_secs(5);
 pub struct Answer {
     pub status: u16,
     pub body: Vec<u8>,
+    /// `Retry-After` in seconds, when the answer has one.
+    pub retry_after: Option<std::time::Duration>,
 }
 
 impl Answer {
@@ -197,6 +199,11 @@ impl Eve {
 
 async fn read(response: reqwest::Response) -> Result<Answer, EveError> {
     let status = response.status().as_u16();
+    let retry_after = response
+        .headers()
+        .get(reqwest::header::RETRY_AFTER)
+        .and_then(|value| value.to_str().ok())
+        .and_then(parse_retry_after);
     let body = response
         .bytes()
         .await
@@ -204,5 +211,37 @@ async fn read(response: reqwest::Response) -> Result<Answer, EveError> {
     Ok(Answer {
         status,
         body: body.to_vec(),
+        retry_after,
     })
+}
+
+/// `Retry-After` as seconds. The HTTP-date form is left out: without it a
+/// wait falls back to the listener's own backoff, which is long enough.
+fn parse_retry_after(header: &str) -> Option<std::time::Duration> {
+    let seconds: f64 = header.trim().parse().ok()?;
+    // `NaN` and `inf` parse as floats too.
+    if !seconds.is_finite() {
+        return None;
+    }
+    std::time::Duration::try_from_secs_f64(seconds.max(0.0)).ok()
+}
+
+#[cfg(test)]
+mod tests {
+    use std::time::Duration;
+
+    use super::parse_retry_after;
+
+    #[test]
+    fn retry_after_is_a_finite_number_of_seconds() {
+        assert_eq!(parse_retry_after("120"), Some(Duration::from_secs(120)));
+        assert_eq!(
+            parse_retry_after(" 1.5 "),
+            Some(Duration::from_millis(1500))
+        );
+        assert_eq!(parse_retry_after("-3"), Some(Duration::ZERO));
+        assert_eq!(parse_retry_after("NaN"), None);
+        assert_eq!(parse_retry_after("inf"), None);
+        assert_eq!(parse_retry_after("Wed, 21 Oct 2026 07:28:00 GMT"), None);
+    }
 }
