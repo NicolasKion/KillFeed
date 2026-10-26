@@ -12,6 +12,11 @@
 //!   that is usually a few sequences back, so killmails are read again;
 //!   the queue's one-job-per-killmail rule and the storage make that a
 //!   no-op.
+//! - A 429 is waited out: as long as `Retry-After` asks, and at least 30
+//!   seconds doubled for each 429 in a row, up to an hour (R2Z2's ban).
+//!   The limit is per IP, so other apps on the same address can use it up
+//!   as much as this one, and asking again every 6 seconds only keeps the
+//!   block going.
 //! - Any other failure, a connection error included, is retried on the
 //!   same sequence after 6 seconds. An item that does not parse is logged
 //!   and skipped.
@@ -19,8 +24,9 @@
 //!   ends.
 //!
 //! R2Z2 keeps a sequence file for at least 24 hours and allows 15
-//! requests a second per IP (zKillboard's R2Z2 wiki page); the 100 ms
-//! between items keeps the listener under that. A gap (the listener
+//! requests a second per IP (zKillboard's R2Z2 wiki page); the 250 ms
+//! between items keeps the listener well under that, with room for
+//! another app on the same address catching up at the same time. A gap (the listener
 //! stopped) is replayed in order while R2Z2 still has the
 //! files, so any stop shorter than a day loses nothing; files it no longer has answer 404 like the
 //! head of the stream, so after the ten 404s the listener jumps to the
@@ -46,6 +52,22 @@ const WATCHED_FOR: Duration = Duration::seconds(30);
 
 /// How recent an overlay view keeps a character watched.
 const LISTENING_WINDOW: Duration = Duration::minutes(5);
+
+/// The longest wait after a 429, whatever `Retry-After` says: R2Z2 bans an
+/// address for an hour.
+const THROTTLED_AT_MOST: std::time::Duration = std::time::Duration::from_secs(60 * 60);
+
+/// The wait after the `nth` 429 in a row (from 1): `base` doubled for each
+/// one before it, never shorter than `Retry-After`, never past an hour.
+fn throttled_wait(
+    base: std::time::Duration,
+    nth: u32,
+    retry_after: Option<std::time::Duration>,
+) -> std::time::Duration {
+    base.saturating_mul(2u32.saturating_pow(nth.saturating_sub(1)))
+        .max(retry_after.unwrap_or_default())
+        .min(THROTTLED_AT_MOST)
+}
 
 /// The characters to watch, read at most every 30 seconds.
 struct Watched {
@@ -99,9 +121,34 @@ pub async fn run(state: AppState, cancel: CancellationToken) {
         read_at: None,
     };
     let mut consecutive_404s = 0;
+    let mut consecutive_429s = 0;
     while !cancel.is_cancelled() {
         let answer = state.eve.r2z2_get(&format!("/{sequence}.json")).await;
+        if !matches!(answer, Ok(Answer { status: 429, .. })) {
+            consecutive_429s = 0;
+        }
         match answer {
+            Ok(Answer {
+                status: 429,
+                retry_after,
+                ..
+            }) => {
+                consecutive_429s += 1;
+                let wait = throttled_wait(
+                    timing.listener_throttle_pause,
+                    consecutive_429s,
+                    retry_after,
+                );
+                tracing::warn!(
+                    sequence,
+                    consecutive_429s,
+                    retry_in = wait.as_secs(),
+                    "R2Z2: rate limited, waiting"
+                );
+                if pause(&cancel, wait).await {
+                    break;
+                }
+            }
             Ok(Answer { status: 404, .. }) => {
                 consecutive_404s += 1;
                 tracing::debug!(
@@ -250,5 +297,34 @@ async fn store_sequence(state: &AppState, sequence: i64) {
     .await;
     if let Err(error) = stored {
         tracing::error!(sequence, %error, "R2Z2: sequence not stored");
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use std::time::Duration;
+
+    use super::{THROTTLED_AT_MOST, throttled_wait};
+
+    #[test]
+    fn each_429_in_a_row_doubles_the_wait_up_to_an_hour() {
+        let base = Duration::from_secs(30);
+        let waits: Vec<u64> = (1..=9)
+            .map(|nth| throttled_wait(base, nth, None).as_secs())
+            .collect();
+        assert_eq!(waits, [30, 60, 120, 240, 480, 960, 1920, 3600, 3600]);
+        assert_eq!(throttled_wait(base, u32::MAX, None), THROTTLED_AT_MOST);
+    }
+
+    #[test]
+    fn retry_after_lengthens_the_wait_but_never_past_an_hour() {
+        let base = Duration::from_secs(30);
+        let asked = |secs| Some(Duration::from_secs(secs));
+        assert_eq!(
+            throttled_wait(base, 1, asked(300)),
+            Duration::from_secs(300)
+        );
+        assert_eq!(throttled_wait(base, 3, asked(5)), Duration::from_secs(120));
+        assert_eq!(throttled_wait(base, 1, asked(86_400)), THROTTLED_AT_MOST);
     }
 }

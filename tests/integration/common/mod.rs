@@ -91,6 +91,7 @@ pub fn test_config(eve: &MockEve) -> Config {
                 esi_type_retry: Duration::from_millis(1),
                 listener_item_pause: Duration::from_millis(1),
                 listener_retry_pause: Duration::from_millis(1),
+                listener_throttle_pause: Duration::from_millis(1),
             },
         },
         background: BackgroundConfig {

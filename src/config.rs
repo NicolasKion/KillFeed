@@ -55,10 +55,12 @@ pub struct RetryTiming {
     pub esi_killmail_retry: Duration,
     /// Between the three tries of a type lookup on ESI (500 ms).
     pub esi_type_retry: Duration,
-    /// Between the listener's items (100 ms).
+    /// Between the listener's items (250 ms).
     pub listener_item_pause: Duration,
     /// After a missing or failed sequence (6 s).
     pub listener_retry_pause: Duration,
+    /// After the first 429 in a row (30 s), doubled for each one after it.
+    pub listener_throttle_pause: Duration,
 }
 
 impl Default for RetryTiming {
@@ -66,8 +68,9 @@ impl Default for RetryTiming {
         Self {
             esi_killmail_retry: Duration::from_millis(1000),
             esi_type_retry: Duration::from_millis(500),
-            listener_item_pause: Duration::from_millis(100),
+            listener_item_pause: Duration::from_millis(250),
             listener_retry_pause: Duration::from_secs(6),
+            listener_throttle_pause: Duration::from_secs(30),
         }
     }
 }

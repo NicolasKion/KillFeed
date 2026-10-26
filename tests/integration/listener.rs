@@ -212,6 +212,30 @@ async fn a_failure_is_retried_on_the_same_sequence() {
     assert_eq!(app.eve.paths_under("/r2z2")[..3], ["/r2z2/7.json"; 3]);
 }
 
+/// A 429 waits as long as `Retry-After` asks, not the few milliseconds
+/// the tests give every other retry, then goes on with the same sequence.
+#[tokio::test]
+async fn a_429_waits_out_retry_after() {
+    let app = TestApp::new().await;
+    store_sequence(&app, 6).await;
+    app.eve.once(
+        "/r2z2/7.json",
+        Reply::status(429).with_header("retry-after", "1"),
+    );
+    app.eve.on("/r2z2/7.json", Reply::json(item(7, 1, 2)));
+
+    let running = start(&app);
+    tokio::time::sleep(std::time::Duration::from_millis(500)).await;
+    assert_eq!(app.eve.paths_under("/r2z2"), ["/r2z2/7.json"]);
+    eventually("sequence 7 handled", || async {
+        stored_sequence(&app).await == Some(7)
+    })
+    .await;
+    running.stop().await;
+
+    assert_eq!(app.eve.paths_under("/r2z2")[..2], ["/r2z2/7.json"; 2]);
+}
+
 /// An unreachable firehose is retried instead of ending the
 /// listener.
 #[tokio::test]
